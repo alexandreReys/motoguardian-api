@@ -25,6 +25,6 @@ router.get("/", (req, res) => {
 
 router.post("/auth", Auth.auth);
 
-router.use("/oficinas", Authz.authz, oficinasRouter);
+router.use("/oficinas", oficinasRouter);
 
 module.exports = router;
