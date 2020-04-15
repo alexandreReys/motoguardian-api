@@ -5,6 +5,10 @@ const router = require("./router");
 
 const app = express();
 
+const port = process.env.API_PORT || 3000;
+
 app.use(router);
 
-app.listen(3000, () => console.log("server on line on localhost:3333"));
+app.listen(port, () =>
+  console.log(`Server in ${process.env.node_env} on Port:${port}`)
+);
