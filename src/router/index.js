@@ -2,8 +2,8 @@ const express = require("express");
 const { Router } = require("express");
 const cors = require("cors");
 
-const Auth = require("../middlewares/Auth");
-const Authz = require("../middlewares/Authz");
+const Authentication = require("../middlewares/Auth");
+const Authorization = require("../middlewares/Authz");
 
 const oficinasRouter = require("./oficinasRouter");
 
@@ -23,8 +23,8 @@ router.get("/", (req, res) => {
   }
 });
 
-router.post("/auth", Auth.auth);
+router.post("/auth", Authentication);
 
-router.use("/oficinas", oficinasRouter);
+router.use("/oficinas", Authorization, oficinasRouter);
 
 module.exports = router;

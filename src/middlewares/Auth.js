@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 var connection = require("../mysql-connection");
 
-module.exports.auth = function (req, resp) {
+module.exports = function (req, resp) {
   if (req.body) {
     getEmailLogin(req.body, (err, rows) =>
       checkAndResponseLogin(err, rows, resp)
