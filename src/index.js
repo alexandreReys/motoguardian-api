@@ -5,7 +5,7 @@ const router = require("./router");
 
 const app = express();
 
-const port = process.env.api_port || 3000;
+const port = process.env.port || 3000;
 const environment = process.env.node_env || "production";
 
 app.use(router);
