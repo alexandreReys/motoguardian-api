@@ -5,11 +5,11 @@ const connection = mysql.createPool({
   connectTimeout: 60 * 60 * 1000,
   acquireTimeout: 60 * 60 * 1000,
   timeout: 60 * 60 * 1000,
-  host: process.env.autocom_db_host, // Variavel Ambiental
-  port: process.env.autocom_db_port, // Variavel Ambiental
-  user: process.env.autocom_db_user, // Variavel Ambiental
-  password: process.env.autocom_db_pass, // Variavel Ambiental
-  database: process.env.autocom_db_datab // Variavel Ambiental
+  host: process.env.DB_HOST, // .env
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_DATAB,
 });
 
 module.exports = connection;

@@ -25,7 +25,7 @@ function checkAndResponseLogin(err, rows, response) {
 
   if (rows[0]) {
     const username = rows[0].name;
-    let token = jwt.sign({ username }, process.env.secret);
+    let token = jwt.sign({ username }, process.env.SECRET);
     response.json({ auth: true, token: token, username: username });
   } else {
     response.status(403).json({ message: "Dados invalidos !" });
