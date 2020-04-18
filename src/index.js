@@ -5,9 +5,8 @@ const router = require("./router");
 
 const app = express();
 
-const port = process.env.port || 3000;
-const environment = process.env.node_env || "production";
+const port = process.env.PORT;
 
 app.use(router);
 
-app.listen(port, () => console.log(`Server in ${environment} on Port:${port}`));
+app.listen(port, () => console.log(`Server on Port:${port}`));
