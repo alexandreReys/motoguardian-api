@@ -4,7 +4,7 @@ const router = require("./router");
 
 const app = express();
 
-const port = process.env.PORT || 3333;
+const port = process.env.PORT;
 
 app.use(router);
 
