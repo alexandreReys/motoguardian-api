@@ -1,10 +1,15 @@
 const mysql = require("mysql");
 
+let segundos = 1000; // milisegundos
+let minutos = 60 * segundos;
+
 const connection = mysql.createPool({
-  connectionLimit: 1000,
-  connectTimeout: 60 * 60 * 1000,
-  acquireTimeout: 60 * 60 * 1000,
-  timeout: 60 * 60 * 1000,
+  connectionLimit: 30, // 1000, // The maximum number of connections to create at once. (Default: 10)
+
+  connectTimeout: 40 * segundos, // 60*minutos,  (Default: 10000) 10 segundos
+  acquireTimeout: 40 * segundos, // 60*minutos,  (Default: 10000) 10 segundos
+  timeout: 40 * segundos, // 60*minutos,
+
   host: process.env.DB_HOST, // .env
   port: process.env.DB_PORT,
   user: process.env.DB_USER,
