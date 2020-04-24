@@ -1,12 +1,12 @@
 const { Router } = require("express");
-const OficinasController = require("../controllers/OficinasController");
+const oficinasController = require("../controllers/oficinasController");
 
 const router = Router();
 
-router.get("/", OficinasController.getAll);
-router.get("/fantasia", OficinasController.getByFantasia);
-router.post("/", OficinasController.post);
-router.put("/", OficinasController.put);
-router.delete("/", OficinasController.delete);
+router.get("/", oficinasController.getAll);
+router.get("/fantasia", oficinasController.getByFantasia);
+router.post("/", oficinasController.post);
+router.put("/", oficinasController.put);
+router.delete("/", oficinasController.delete);
 
 module.exports = router;

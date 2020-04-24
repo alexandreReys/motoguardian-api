@@ -6,6 +6,8 @@ const Authentication = require("../middlewares/Auth");
 const Authorization = require("../middlewares/Authz");
 
 const oficinasRouter = require("./oficinasRouter");
+const clientesRouter = require("./clientesRouter");
+const veiculosRouter = require("./veiculosRouter");
 
 const router = Router();
 
@@ -26,5 +28,7 @@ router.get("/", (req, res) => {
 router.post("/auth", Authentication);
 
 router.use("/oficinas", Authorization, oficinasRouter);
+router.use("/clientes", Authorization, clientesRouter);
+router.use("/veiculos", Authorization, veiculosRouter);
 
 module.exports = router;
