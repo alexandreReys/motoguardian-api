@@ -1,4 +1,5 @@
 var connection = require("../mysql-connection");
+// var connection = require("../mysql-connection");
 
 exports.getAll = function (req, res) {
   getAll((err, rows) => {
