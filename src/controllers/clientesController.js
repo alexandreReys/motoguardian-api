@@ -1,4 +1,6 @@
-var connection = require("../mysql-connection");
+const connection = require("../mysql-connection");
+const fs = require("fs");
+const gdrive = require("../services/gdrive/gdrive");
 
 exports.getAll = function (req, res) {
   getAll((err, rows) => {
@@ -18,6 +20,15 @@ exports.post = function (req, res) {
   insertCliente(req, (err, rows) => {
     if (err) return handleError(err);
     res.json(rows);
+  });
+};
+
+exports.postImage = function (req, res) {
+  gdrive.imageUpload(req.file.filename, req.file.path, (id) => {
+    fs.unlink(req.file.path, function (err) {
+      if (err) throw err;
+    });
+    return res.json({ googledriveId: id });
   });
 };
 
