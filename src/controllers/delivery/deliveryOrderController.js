@@ -29,7 +29,7 @@ exports.putRejectOrder = function (req, res) {
     if (err) return handleError(err);
 
     insertDeliveryOrderHistory(
-      req.params.idOrder,
+      req.params.IdOrder,
       "Rejeitado",
       "",
       (err, rows) => {
@@ -236,7 +236,7 @@ const rejectOrder = (req, callback) => {
     UPDATE delivery_order SET StatusOrder = "Rejeitado"
     WHERE (IdOrder = ?)
   `;
-  connection.query(sql, [req.params.idOrder], function (error, rows) {
+  connection.query(sql, [req.params.IdOrder], function (error, rows) {
     return callback(error, rows);
   });
 };
