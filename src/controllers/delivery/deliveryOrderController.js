@@ -25,17 +25,45 @@ exports.getHistory = function (req, res) {
 };
 
 exports.putRejectOrder = function (req, res) {
-  rejectOrder(req, (err, rows) => {
+  const id = req.params.IdOrder;
+  const status = "Rejeitado";
+
+  changeStatusOrder(id, status, (err, rows) => {
     if (err) return handleError(err);
 
-    insertDeliveryOrderHistory(
-      req.params.IdOrder,
-      "Rejeitado",
-      "",
-      (err, rows) => {
-        if (err) return handleError(err, res);
-      }
-    );
+    insertDeliveryOrderHistory(id, status, "", (err, rows) => {
+      if (err) return handleError(err, res);
+    });
+
+    res.json(rows);
+  });
+};
+
+exports.putDeliveringOrder = function (req, res) {
+  const id = req.params.IdOrder;
+  const status = "Saiu para entregar";
+
+  changeStatusOrder(id, status, (err, rows) => {
+    if (err) return handleError(err);
+
+    insertDeliveryOrderHistory(id, status, "", (err, rows) => {
+      if (err) return handleError(err, res);
+    });
+
+    res.json(rows);
+  });
+};
+
+exports.putDeliveredOrder = function (req, res) {
+  const id = req.params.IdOrder;
+  const status = "Entregue";
+
+  changeStatusOrder(id, status, (err, rows) => {
+    if (err) return handleError(err);
+
+    insertDeliveryOrderHistory(id, status, "", (err, rows) => {
+      if (err) return handleError(err, res);
+    });
 
     res.json(rows);
   });
@@ -199,6 +227,29 @@ const insertDeliveryOrder = (req, callback) => {
   });
 };
 
+const insertItem = async (item, orderId) => {
+  const sql = `INSERT INTO delivery_orderItem (
+    IdOrderItem, idProductOrderItem, quantityOrderItem, priceOrderItem
+  ) VALUES ( ?,?,?,? )`;
+
+  const params = [orderId, item.id, item.quantity, item.price];
+
+  connection.query(sql, params, function (err, rows) {
+    if (err) return handleError(err);
+    return;
+  });
+};
+
+const changeStatusOrder = (id, status, callback) => {
+  let sql = `
+    UPDATE delivery_order SET StatusOrder = ?
+    WHERE (IdOrder = ?)
+  `;
+  connection.query(sql, [status, id], function (error, rows) {
+    return callback(error, rows);
+  });
+};
+
 const insertDeliveryOrderHistory = (id, status, comments, callback) => {
   const sql = `
     INSERT INTO delivery_orderHistory ( 
@@ -215,28 +266,5 @@ const insertDeliveryOrderHistory = (id, status, comments, callback) => {
 
   connection.query(sql, params, function (err, rows) {
     return callback(err, rows);
-  });
-};
-
-const insertItem = async (item, orderId) => {
-  const sql = `INSERT INTO delivery_orderItem (
-    IdOrderItem, idProductOrderItem, quantityOrderItem, priceOrderItem
-  ) VALUES ( ?,?,?,? )`;
-
-  const params = [orderId, item.id, item.quantity, item.price];
-
-  connection.query(sql, params, function (err, rows) {
-    if (err) return handleError(err);
-    return;
-  });
-};
-
-const rejectOrder = (req, callback) => {
-  let sql = `
-    UPDATE delivery_order SET StatusOrder = "Rejeitado"
-    WHERE (IdOrder = ?)
-  `;
-  connection.query(sql, [req.params.IdOrder], function (error, rows) {
-    return callback(error, rows);
   });
 };
