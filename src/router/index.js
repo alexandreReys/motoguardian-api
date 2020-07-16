@@ -9,7 +9,7 @@ const Authorization = require("../middlewares/Authz");
 const oficinasRouter = require("./oficinasRouter");
 const clientesRouter = require("./clientesRouter");
 const veiculosRouter = require("./veiculosRouter");
-const vinhosRouter = require("./delivery/vinhosRouter");
+const productsRouter = require("./delivery/productsRouter");
 const deliveryOrderRouter = require("./delivery/deliveryOrderRouter");
 
 const router = Router();
@@ -36,7 +36,7 @@ router.use("/oficinas", Authorization, oficinasRouter);
 router.use("/clientes", Authorization, clientesRouter);
 router.use("/veiculos", Authorization, veiculosRouter);
 
-router.use("/vinhos", vinhosRouter);
+router.use("/products", productsRouter);
 
 router.use("/delivery-order", deliveryOrderRouter);
 

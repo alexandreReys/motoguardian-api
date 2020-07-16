@@ -1,6 +1,7 @@
-const connection = require("../mysql-connection");
+const connection = require("../../mysql-connection");
 const fs = require("fs");
-const gdrive = require("../services/gdrive/gdrive");
+const gdrive = require("../../services/gdrive/gdrive");
+const groupedMax5 = require("../../utils/groupBy");
 
 exports.getAll = function (req, res) {
   getAll((err, rows) => {
@@ -9,10 +10,26 @@ exports.getAll = function (req, res) {
   });
 };
 
-exports.getByName = function (req, res) {
+exports.getProductsByName = function (req, res) {
   getByName(req, (err, rows) => {
     if (err) return handleError(err);
     res.json(rows);
+  });
+};
+
+exports.getProductsByCategory = function (req, res) {
+  getByCategory(req, (err, rows) => {
+    if (err) return handleError(err);
+    res.json(rows);
+  });
+};
+
+exports.getProductsGroupedByCategory = function (req, res) {
+  getAll((err, rows) => {
+    if (err) return handleError(err);
+    let products = JSON.parse(JSON.stringify(rows));
+    products = groupedMax5(products, "TipoVinho");
+    res.send(products);
   });
 };
 
@@ -68,6 +85,17 @@ const getAll = (callback) => {
   });
 };
 
+const getByCategory = (req, callback) => {
+  const params = [req.query.Category];
+  let sql = `SELECT *
+             FROM ProdutosVinho
+             WHERE (TipoVinho LIKE ?)
+             ORDER BY TipoVinho, DescricaoVinho`;
+  connection.query(sql, params, function (error, rows) {
+    return callback(error, rows);
+  });
+};
+
 const getByName = (req, callback) => {
   const stringParam = `%${req.query.DescricaoVinho}%`;
   const params = [stringParam, stringParam];
@@ -76,6 +104,21 @@ const getByName = (req, callback) => {
              WHERE (DescricaoVinho LIKE ?)
              ORDER BY DescricaoVinho`;
   connection.query(sql, params, function (error, rows) {
+    return callback(error, rows);
+  });
+};
+
+const getFiveByCategory = (req, callback) => {
+  const stringParam = `%${req.query.Category}%`;
+  const params = [stringParam, stringParam];
+  let sql = `SELECT *
+             FROM ProdutosVinho
+             WHERE (TipoVinho LIKE ?)
+             ORDER BY DescricaoVinho`;
+  //   LIMIT 0,5`;
+  connection.query(sql, params, function (error, rows) {
+    resultArray = JSON.parse(JSON.stringify(rows));
+    console.log(resultArray);
     return callback(error, rows);
   });
 };

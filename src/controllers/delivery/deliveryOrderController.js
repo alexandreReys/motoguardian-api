@@ -4,7 +4,7 @@ const getDateNow = require("../../utils/getDateNow");
 const getTimeNow = require("../../utils/getTimeNow");
 
 exports.getAll = function (req, res) {
-  getAllOrders((err, rows) => {
+  getAllOrders(req, (err, rows) => {
     if (err) return handleError(err);
     res.json(rows);
   });
@@ -123,11 +123,24 @@ const handleError = (err, res) => {
 
 ////////////////////////////////////////////////////////////////////////////////////
 
-const getAllOrders = (callback) => {
-  let sql = `SELECT * FROM delivery_order ORDER BY IdOrder desc`;
-  connection.query(sql, function (error, rows) {
-    return callback(error, rows);
-  });
+const getAllOrders = (req, callback) => {
+  if (!req.params.status || req.params.status === "Todos") {
+    let sql = `SELECT * FROM delivery_order ORDER BY IdOrder desc`;
+    connection.query(sql, function (error, rows) {
+      return callback(error, rows);
+    });
+  } else {
+    let sql = `
+      SELECT * 
+      FROM delivery_order 
+      WHERE StatusOrder = ?
+      ORDER BY IdOrder desc
+    `;
+
+    connection.query(sql, [req.params.status], function (error, rows) {
+      return callback(error, rows);
+    });
+  }
 };
 
 const getOrderItems = (req, callback) => {
