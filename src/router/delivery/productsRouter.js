@@ -8,17 +8,12 @@ const router = Router();
 
 router.get("/", productsController.getAll);
 
-router.get("/name", Authorization, productsController.getProductsByName);
+router.get("/name", productsController.getProductsByName);
 
-router.get(
-  "/category",
-  Authorization,
-  productsController.getProductsByCategory
-);
+router.get("/category", productsController.getProductsByCategory);
 
 router.get(
   "/category/grouped",
-  Authorization,
   productsController.getProductsGroupedByCategory
 );
 
