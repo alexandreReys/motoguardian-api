@@ -118,7 +118,6 @@ const getFiveByCategory = (req, callback) => {
   //   LIMIT 0,5`;
   connection.query(sql, params, function (error, rows) {
     resultArray = JSON.parse(JSON.stringify(rows));
-    console.log(resultArray);
     return callback(error, rows);
   });
 };

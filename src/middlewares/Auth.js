@@ -28,7 +28,7 @@ function checkAndResponseLogin(err, rows, response) {
     let token = jwt.sign({ username }, process.env.SECRET);
     response.json({ auth: true, token: token, username: username });
   } else {
-    response.status(403).json({ message: "Dados invalidos !" });
+    response.status(200).json({ message: "Dados invalidos !" });
   }
 }
 

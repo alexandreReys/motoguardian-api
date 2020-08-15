@@ -10,6 +10,27 @@ exports.getAll = function (req, res) {
   });
 };
 
+exports.getById = function (req, res) {
+  getOrderById(req, (err, rows) => {
+    if (err) return handleError(err);
+    res.json(rows);
+  });
+};
+
+exports.getByStatus = function (req, res) {
+  getOrderByStatus(req, (err, rows) => {
+    if (err) return handleError(err);
+    res.json(rows);
+  });
+};
+
+exports.getByDeliveryManStatus = function (req, res) {
+  getOrdersByDeliveryManStatus(req, (err, rows) => {
+    if (err) return handleError(err);
+    res.json(rows);
+  });
+};
+
 exports.getItems = function (req, res) {
   getOrderItems(req, (err, rows) => {
     if (err) return handleError(err);
@@ -28,7 +49,7 @@ exports.putRejectOrder = function (req, res) {
   const id = req.params.IdOrder;
   const status = "Rejeitado";
 
-  changeStatusOrder(id, status, (err, rows) => {
+  changeStatusOrder(id, status, null, (err, rows) => {
     if (err) return handleError(err);
 
     insertDeliveryOrderHistory(id, status, "", (err, rows) => {
@@ -43,7 +64,7 @@ exports.putDeliveringOrder = function (req, res) {
   const id = req.params.IdOrder;
   const status = "Saiu para entregar";
 
-  changeStatusOrder(id, status, (err, rows) => {
+  changeStatusOrder(id, status, null, (err, rows) => {
     if (err) return handleError(err);
 
     insertDeliveryOrderHistory(id, status, "", (err, rows) => {
@@ -58,7 +79,7 @@ exports.putDeliveredOrder = function (req, res) {
   const id = req.params.IdOrder;
   const status = "Entregue";
 
-  changeStatusOrder(id, status, (err, rows) => {
+  changeStatusOrder(id, status, null, (err, rows) => {
     if (err) return handleError(err);
 
     insertDeliveryOrderHistory(id, status, "", (err, rows) => {
@@ -107,6 +128,38 @@ exports.getCep = async (req, res) => {
   }
 };
 
+exports.postLeaving = function (req, res) {
+  const orders = req.body;
+  if (orders) {
+    orders.forEach( (order) => updateOrder(order) );
+  };
+  res.json({ msg: "ok" });
+};
+
+exports.putStartDelivery = function (req, res) {
+  const id = req.params.IdOrder;
+  const status = "A caminho";
+  changeStatusOrder(id, status, null, (err, rows) => {
+    if (err) return handleError(err);
+    insertDeliveryOrderHistory(id, status, "", (err, rows) => {
+      if (err) return handleError(err, res);
+    });
+    res.json(rows);
+  });
+};
+
+exports.putEndDelivery = function (req, res) {
+  const id = req.params.IdOrder;
+  const status = "Entregue";
+  changeStatusOrder(id, status, null, (err, rows) => {
+    if (err) return handleError(err);
+    insertDeliveryOrderHistory(id, status, "", (err, rows) => {
+      if (err) return handleError(err, res);
+    });
+    res.json(rows);
+  });
+};
+
 ////////////////////////////////////////////////////////////////////////////////////
 
 const handleError = (err, res) => {
@@ -138,6 +191,58 @@ const getAllOrders = (req, callback) => {
     `;
 
     connection.query(sql, [req.params.status], function (error, rows) {
+      return callback(error, rows);
+    });
+  }
+};
+
+const getOrderById = (req, callback) => {
+  let sql = `
+    SELECT * 
+    FROM delivery_order 
+    WHERE (IdOrder = ?)
+  `;
+  connection.query(sql, [req.params.idOrder], function (error, rows) {
+    return callback(error, rows);
+  });
+};
+
+const getOrderByStatus = (req, callback) => {
+  const status = req.params.status;
+
+  if (status == "Saiu para entregar") {
+    const status2 = "A caminho";
+    let sql = "SELECT * FROM delivery_order WHERE (StatusOrder = ?) OR (StatusOrder = ?)";
+    connection.query(sql, [status, status2], function (error, rows) {
+      return callback(error, rows);
+    });
+  } else {
+    let sql = "SELECT * FROM delivery_order WHERE (StatusOrder = ?)";
+    connection.query(sql, [status], function (error, rows) {
+      return callback(error, rows);
+    });
+  }
+};
+
+const getOrdersByDeliveryManStatus = (req, callback) => {
+  const status = req.query.status;
+  const deliveryMan = req.query.deliveryMan;
+
+  if (status == "Saiu para entregar") {
+    const status2 = "A caminho";
+    let sql = `SELECT * FROM delivery_order 
+               WHERE ((StatusOrder = ?) OR (StatusOrder = ?)) 
+               AND (DeliveryManOrder = ?)`;
+    
+    connection.query(sql, [status, status2, deliveryMan], function (error, rows) {
+      return callback(error, rows);
+    });
+  } else {
+    let sql = `SELECT * FROM delivery_order 
+               WHERE (StatusOrder = ?)
+               AND (DeliveryManOrder = ?)`;
+               
+    connection.query(sql, [status, deliveryMan], function (error, rows) {
       return callback(error, rows);
     });
   }
@@ -253,14 +358,38 @@ const insertItem = async (item, orderId) => {
   });
 };
 
-const changeStatusOrder = (id, status, callback) => {
-  let sql = `
-    UPDATE delivery_order SET StatusOrder = ?
-    WHERE (IdOrder = ?)
-  `;
-  connection.query(sql, [status, id], function (error, rows) {
-    return callback(error, rows);
+const updateOrder = function (order) {
+  const id = order.IdOrder;
+  const status = "Saiu para entregar";
+  const deliveryMan = order.DeliveryManOrder;
+  changeStatusOrder(id, status, deliveryMan, (err, rows) => {
+    if (err) return handleError(err);
+    insertDeliveryOrderHistory(id, status, "", (err, rows) => {
+      if (err) return false;
+    });
   });
+};
+
+const changeStatusOrder = (id, status, deliveryMan, callback) => {
+  if (!deliveryMan) {
+    let sql = `
+      UPDATE delivery_order SET StatusOrder = ?
+      WHERE (IdOrder = ?)
+    `;
+    connection.query(sql, [status, id], function (error, rows) {
+      return callback(error, rows);
+    });
+  } else {
+    let sql = `
+      UPDATE delivery_order SET 
+        StatusOrder = ?,
+        DeliveryManOrder = ?
+      WHERE (IdOrder = ?)
+    `;
+    connection.query(sql, [status, deliveryMan, id], function (error, rows) {
+      return callback(error, rows);
+    });
+  }
 };
 
 const insertDeliveryOrderHistory = (id, status, comments, callback) => {
