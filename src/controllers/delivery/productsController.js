@@ -1,6 +1,8 @@
-const connection = require("../../mysql-connection");
 const fs = require("fs");
+const { cloudinary } = require("../../config/cloudinary");
 const gdrive = require("../../services/gdrive/gdrive");
+
+const connection = require("../../mysql-connection");
 const groupedMax5 = require("../../utils/groupBy");
 
 exports.getAll = function (req, res) {
@@ -63,6 +65,42 @@ exports.delete = function (req, res) {
     if (err) return handleError(err);
     res.json(rows);
   });
+};
+
+exports.uploadProductImage = async function (req, res) {
+  try {
+    const base64Image = req.body.data;
+
+    const response = await cloudinary.uploader.
+      upload(base64Image, { upload_preset: 'adega_da_vila' });
+
+    res.json({
+      url: response.url,
+      public_id: response.public_id,
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({err: "Something went wrong"});
+  };
+};
+
+exports.deleteProductImage = async function (req, res) {
+  try {
+    const publicId = req.query.Imagem1IdVinho;
+    console.log(req.query);
+
+
+
+
+
+    
+    await cloudinary.uploader.destroy(publicId);
+    res.json({msg: "OK"});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({err: "Something went wrong"});
+  };
 };
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -134,11 +172,12 @@ const insertVinho = (req, callback) => {
       ComentarioVinho,
       CodigoErpVinho,
       Imagem1Vinho,
+      Imagem1IdVinho,
       Imagem2Vinho,
       Imagem3Vinho
     ) 
     VALUES ( 
-      ?,?,?, ?,?,?, ?,?,?, ?,?
+      ?,?,?, ?,?,?, ?,?,?, ?,?,?
     )`;
   const params = [
     dados.DescricaoVinho,
@@ -150,6 +189,7 @@ const insertVinho = (req, callback) => {
     dados.ComentarioVinho,
     dados.CodigoErpVinho,
     dados.Imagem1Vinho,
+    dados.Imagem1IdVinho,
     dados.Imagem2Vinho,
     dados.Imagem3Vinho,
   ];
@@ -171,6 +211,7 @@ const updateVinho = (req, callback) => {
        ComentarioVinho = ?,
        CodigoErpVinho = ?,
        Imagem1Vinho = ?,
+       Imagem1IdVinho = ?,
        Imagem2Vinho = ?,
        Imagem3Vinho = ?
     WHERE 
@@ -185,6 +226,7 @@ const updateVinho = (req, callback) => {
     dados.ComentarioVinho,
     dados.CodigoErpVinho,
     dados.Imagem1Vinho,
+    dados.Imagem1IdVinho,
     dados.Imagem2Vinho,
     dados.Imagem3Vinho,
     dados.IdVinho,

@@ -91,7 +91,9 @@ exports.putDeliveredOrder = function (req, res) {
 };
 
 exports.post = function (req, res) {
-  insertDeliveryOrder(req, async (err, rows) => {
+  const dateOrder = getDateNow();
+  const timeOrder = getTimeNow();
+  insertDeliveryOrder(req, dateOrder, timeOrder, async (err, rows) => {
     if (err) return handleError(err, res);
 
     if (req.body.orderItems) {
@@ -109,8 +111,12 @@ exports.post = function (req, res) {
       }
     );
 
-    res.json({ insertId: rows.insertId });
-  });
+    res.json({ 
+      insertId: rows.insertId,
+      dateOrder,
+      timeOrder,
+    });
+  });''
 };
 
 exports.getCep = async (req, res) => {
@@ -212,12 +218,21 @@ const getOrderByStatus = (req, callback) => {
 
   if (status == "Saiu para entregar") {
     const status2 = "A caminho";
-    let sql = "SELECT * FROM delivery_order WHERE (StatusOrder = ?) OR (StatusOrder = ?)";
+    let sql = 
+      `SELECT * 
+       FROM delivery_order 
+       WHERE (StatusOrder = ?) OR (StatusOrder = ?)
+       ORDER BY IdOrder desc`;
     connection.query(sql, [status, status2], function (error, rows) {
       return callback(error, rows);
     });
   } else {
-    let sql = "SELECT * FROM delivery_order WHERE (StatusOrder = ?)";
+    let sql = 
+      `SELECT * 
+      FROM delivery_order 
+      WHERE (StatusOrder = ?)
+      ORDER BY IdOrder desc
+      `;
     connection.query(sql, [status], function (error, rows) {
       return callback(error, rows);
     });
@@ -272,11 +287,8 @@ const getOrderHistory = (req, callback) => {
   });
 };
 
-const insertDeliveryOrder = (req, callback) => {
+const insertDeliveryOrder = (req, dateOrder, timeOrder, callback) => {
   const dados = req.body;
-
-  const dateOrder = getDateNow();
-  const timeOrder = getTimeNow();
 
   const sql = `INSERT INTO delivery_order ( 
     IdCustomerOrder,

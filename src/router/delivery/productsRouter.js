@@ -12,22 +12,17 @@ router.get("/name", productsController.getProductsByName);
 
 router.get("/category", productsController.getProductsByCategory);
 
-router.get(
-  "/category/grouped",
-  productsController.getProductsGroupedByCategory
-);
+router.get("/category/grouped", productsController.getProductsGroupedByCategory);
 
 router.post("/", Authorization, productsController.post);
 
-router.post(
-  "/image",
-  Authorization,
-  multer(multerConfig).single("file"),
-  productsController.postImage
-);
+router.post("/image", Authorization, multer(multerConfig).single("file"), productsController.postImage);
 
 router.put("/", Authorization, productsController.put);
 
 router.delete("/", Authorization, productsController.delete);
+
+router.post("/img", Authorization, productsController.uploadProductImage);
+router.delete("/img", Authorization, productsController.deleteProductImage);
 
 module.exports = router;
