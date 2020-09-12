@@ -87,8 +87,14 @@ exports.uploadProductImage = async function (req, res) {
 
 exports.deleteProductImage = async function (req, res) {
   try {
+    if (!req.query.Imagem1IdVinho) {
+      console.log( "deleteProductImage1", req.query);   ///////////////////////////////////////////////////////////
+      res.json({msg: "OK"});
+      return;
+    };
+
     const publicId = req.query.Imagem1IdVinho;
-    console.log(req.query);
+    console.log("deleteProductImage2", req.query);   ///////////////////////////////////////////////////////////
 
 
 
