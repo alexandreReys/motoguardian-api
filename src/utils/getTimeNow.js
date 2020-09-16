@@ -1,9 +1,8 @@
 module.exports = function getTimeNow() {
   var data = new Date();
-  var fuso = data.getTimezoneOffset() / 60 - 3;
-  data = new Date(data.valueOf() - (fuso * 3600000));
+  const hour = data.getUTCHours() - 3;
   return (
-    data.getHours().toString().padStart(2, "0") +
+    hour.toString().padStart(2, "0") +
     ":" +
     data.getMinutes().toString().padStart(2, "0") +
     ":" +
