@@ -1,10 +1,12 @@
 module.exports = function getTimeNow() {
-  const d = new Date();
+  var data = new Date();
+  var fuso = data.getTimezoneOffset() / 60 - 3;
+  data = new Date(data.valueOf() - (fuso * 3600000));
   return (
-    d.getHours().toString().padStart(2, "0") +
+    data.getHours().toString().padStart(2, "0") +
     ":" +
-    d.getMinutes().toString().padStart(2, "0") +
+    data.getMinutes().toString().padStart(2, "0") +
     ":" +
-    d.getSeconds().toString().padStart(2, "0")
+    data.getSeconds().toString().padStart(2, "0")
   );
 };

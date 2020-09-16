@@ -166,6 +166,18 @@ exports.putEndDelivery = function (req, res) {
   });
 };
 
+exports.wentWrongDelivery = function (req, res) {
+  const id = req.params.IdOrder;
+  const status = "Deu Ruim";
+  changeStatusOrder(id, status, null, (err, rows) => {
+    if (err) return handleError(err);
+    insertDeliveryOrderHistory(id, status, "", (err, rows) => {
+      if (err) return handleError(err, res);
+    });
+    res.json(rows);
+  });
+};
+
 ////////////////////////////////////////////////////////////////////////////////////
 
 const handleError = (err, res) => {
