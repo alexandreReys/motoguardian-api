@@ -1,7 +1,8 @@
 module.exports = function getTimeNow() {
   var data = new Date();
   
-  const hour = data.getUTCHours() - 3;
+  let hour = data.getUTCHours() - 3;
+
   if (hour < 0) hour = hour + 24;
 
   return (
