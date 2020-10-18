@@ -110,8 +110,9 @@ const get_distance = async (req, callback) => {
 };
 
 const getGoogleDistanceMatrix = async (sellerAddress, customerAddress) => {
+  
   const urlBase = "https://maps.googleapis.com/maps/api/distancematrix/json";
-  const googleApiKey = "AIzaSyB5IWWfcdld42TCGEV9FogbKZnLJf4s1xU";
+  const googleApiKey = process.env.GOOGLE_API_KEY;
 
   const url = `${urlBase}?origins=${sellerAddress}&destinations=${customerAddress}&key=${googleApiKey}`;
 
