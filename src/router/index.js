@@ -14,6 +14,7 @@ const deliveryOrderRouter = require("./delivery/deliveryOrderRouter");
 const deliveryPushRouter = require("./delivery/deliveryPushRouter");
 const deliverymanRouter = require("./delivery/deliverymanRouter");
 const categoryRouter = require("./delivery/categoryRouter");
+const deliverySettingsRouter = require("./delivery/deliverySettingsRouter");
 
 const router = Router();
 
@@ -45,5 +46,6 @@ router.use("/delivery-order", deliveryOrderRouter);
 router.use("/delivery-push-notification", deliveryPushRouter);
 router.use("/deliveryman", deliverymanRouter);
 router.use("/category", categoryRouter);
+router.use("/delivery-settings", deliverySettingsRouter);
 
 module.exports = router;
