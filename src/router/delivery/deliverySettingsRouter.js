@@ -9,4 +9,6 @@ router.post("/", Authorization, settingsController.post);
 router.put("/", Authorization, settingsController.put);
 router.delete("/", Authorization, settingsController.delete);
 
+router.get("/distance/:address", settingsController.getDistance);
+
 module.exports = router;
