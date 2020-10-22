@@ -26,8 +26,15 @@ exports.getProductsByCategory = function (req, res) {
   });
 };
 
+exports.getActiveProductsByCategory = function (req, res) {
+  getActivesByCategory(req, (err, rows) => {
+    if (err) return handleError(err);
+    res.json(rows);
+  });
+};
+
 exports.getProductsGroupedByCategory = function (req, res) {
-  getAll((err, rows) => {
+  getActiveProducts((err, rows) => {
     if (err) return handleError(err);
     let products = JSON.parse(JSON.stringify(rows));
     products = groupedMax5(products, "TipoVinho");
@@ -55,6 +62,13 @@ exports.postImage = function (req, res) {
 
 exports.put = function (req, res) {
   updateVinho(req, (err, rows) => {
+    if (err) return handleError(err);
+    res.json(rows);
+  });
+};
+
+exports.deactivate = function (req, res) {
+  deactivateProduct(req, (err, rows) => {
     if (err) return handleError(err);
     res.json(rows);
   });
@@ -129,11 +143,32 @@ const getAll = (callback) => {
   });
 };
 
+const getActiveProducts = (callback) => {
+  let sql = `SELECT *
+             FROM ProdutosVinho
+             WHERE StatusVinho <> 0 
+             ORDER BY DescricaoVinho`;
+  connection.query(sql, function (error, rows) {
+    return callback(error, rows);
+  });
+};
+
 const getByCategory = (req, callback) => {
   const params = [req.query.Category];
   let sql = `SELECT *
              FROM ProdutosVinho
              WHERE (TipoVinho LIKE ?)
+             ORDER BY TipoVinho, DescricaoVinho`;
+  connection.query(sql, params, function (error, rows) {
+    return callback(error, rows);
+  });
+};
+
+const getActivesByCategory = (req, callback) => {
+  const params = [req.query.Category];
+  let sql = `SELECT *
+             FROM ProdutosVinho
+             WHERE (TipoVinho LIKE ?) and (StatusVinho <> 0)
              ORDER BY TipoVinho, DescricaoVinho`;
   connection.query(sql, params, function (error, rows) {
     return callback(error, rows);
@@ -237,6 +272,18 @@ const updateVinho = (req, callback) => {
     dados.Imagem3Vinho,
     dados.IdVinho,
   ];
+  connection.query(sql, params, function (err, rows) {
+    return callback(err, rows);
+  });
+};
+
+const deactivateProduct = (req, callback) => {
+  const dados = req.body;
+  const sql = 
+    `UPDATE ProdutosVinho 
+     SET StatusVinho = ? 
+     WHERE IdVinho = ?`;
+  const params = [ dados.StatusVinho, dados.IdVinho ];
   connection.query(sql, params, function (err, rows) {
     return callback(err, rows);
   });
