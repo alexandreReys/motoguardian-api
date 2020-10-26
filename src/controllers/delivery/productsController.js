@@ -74,6 +74,20 @@ exports.deactivate = function (req, res) {
   });
 };
 
+exports.promotion = function (req, res) {
+  promotionProduct(req, (err, rows) => {
+    if (err) return handleError(err);
+    res.json(rows);
+  });
+};
+
+exports.promotionalPrice = function (req, res) {
+  setPromotionalPrice(req, (err, rows) => {
+    if (err) return handleError(err);
+    res.json(rows);
+  });
+};
+
 exports.delete = function (req, res) {
   deleteVinho(req, (err, rows) => {
     if (err) return handleError(err);
@@ -284,6 +298,30 @@ const deactivateProduct = (req, callback) => {
      SET StatusVinho = ? 
      WHERE IdVinho = ?`;
   const params = [ dados.StatusVinho, dados.IdVinho ];
+  connection.query(sql, params, function (err, rows) {
+    return callback(err, rows);
+  });
+};
+
+const promotionProduct = (req, callback) => {
+  const dados = req.body;
+  const sql = 
+    `UPDATE ProdutosVinho 
+     SET EmPromocaoVinho = ? 
+     WHERE IdVinho = ?`;
+  const params = [ dados.EmPromocaoVinho, dados.IdVinho ];
+  connection.query(sql, params, function (err, rows) {
+    return callback(err, rows);
+  });
+};
+
+const setPromotionalPrice = (req, callback) => {
+  const dados = req.body;
+  const sql = 
+    `UPDATE ProdutosVinho 
+     SET PrecoPromocionalVinho = ? 
+     WHERE IdVinho = ?`;
+  const params = [ dados.PrecoPromocionalVinho, dados.IdVinho ];
   connection.query(sql, params, function (err, rows) {
     return callback(err, rows);
   });

@@ -18,6 +18,8 @@ router.post("/img", Authorization, productsController.uploadProductImage);
 
 router.put("/", Authorization, productsController.put);
 router.put("/deactivate", Authorization, productsController.deactivate);
+router.put("/promotion", Authorization, productsController.promotion);
+router.put("/promotional-price", Authorization, productsController.promotionalPrice);
 
 router.delete("/", Authorization, productsController.delete);
 router.delete("/img", Authorization, productsController.deleteProductImage);

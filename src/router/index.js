@@ -6,9 +6,10 @@ const morgan = require("morgan");
 const Authentication = require("../middlewares/Auth");
 const Authorization = require("../middlewares/Authz");
 
-const oficinasRouter = require("./oficinasRouter");
-const clientesRouter = require("./clientesRouter");
-const veiculosRouter = require("./veiculosRouter");
+const oficinasRouter = require("./moto-help/oficinasRouter");
+const clientesRouter = require("./moto-help/clientesRouter");
+const veiculosRouter = require("./moto-help/veiculosRouter");
+
 const productsRouter = require("./delivery/productsRouter");
 const deliveryOrderRouter = require("./delivery/deliveryOrderRouter");
 const deliveryPushRouter = require("./delivery/deliveryPushRouter");

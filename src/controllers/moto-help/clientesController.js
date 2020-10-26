@@ -1,6 +1,6 @@
-const connection = require("../mysql-connection");
 const fs = require("fs");
-const gdrive = require("../services/gdrive/gdrive");
+const connection = require("../../mysql-connection");
+const gdrive = require("../../services/gdrive/gdrive");
 
 exports.getAll = function (req, res) {
   getAll((err, rows) => {

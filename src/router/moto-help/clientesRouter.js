@@ -1,7 +1,8 @@
 const { Router } = require("express");
 const multer = require("multer");
-const multerConfig = require("../config/multer");
-const clientesController = require("../controllers/clientesController");
+
+const multerConfig = require("../../config/multer");
+const clientesController = require("../../controllers/moto-help/clientesController");
 
 const router = Router();
 
