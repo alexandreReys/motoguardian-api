@@ -8,9 +8,11 @@ const router = Router();
 
 router.get("/", productsController.getAll);
 router.get("/name", productsController.getProductsByName);
+router.get("/name/actives", productsController.getActiveProductsByName);
 router.get("/category", productsController.getProductsByCategory);
 router.get("/category/actives", productsController.getActiveProductsByCategory);
 router.get("/category/grouped", productsController.getProductsGroupedByCategory);
+router.get("/promotion/actives", productsController.getActiveProductsInPromotion);
 
 router.post("/", Authorization, productsController.post);
 router.post("/image", Authorization, multer(multerConfig).single("file"), productsController.postImage);

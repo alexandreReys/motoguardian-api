@@ -19,6 +19,13 @@ exports.getProductsByName = function (req, res) {
   });
 };
 
+exports.getActiveProductsByName = function (req, res) {
+  getActivesByName(req, (err, rows) => {
+    if (err) return handleError(err);
+    res.json(rows);
+  });
+};
+
 exports.getProductsByCategory = function (req, res) {
   getByCategory(req, (err, rows) => {
     if (err) return handleError(err);
@@ -28,6 +35,13 @@ exports.getProductsByCategory = function (req, res) {
 
 exports.getActiveProductsByCategory = function (req, res) {
   getActivesByCategory(req, (err, rows) => {
+    if (err) return handleError(err);
+    res.json(rows);
+  });
+};
+
+exports.getActiveProductsInPromotion = function (req, res) {
+  getActivesInPromotion((err, rows) => {
     if (err) return handleError(err);
     res.json(rows);
   });
@@ -123,11 +137,6 @@ exports.deleteProductImage = async function (req, res) {
 
     const publicId = req.query.Imagem1IdVinho;
     console.log("deleteProductImage2", req.query);   ///////////////////////////////////////////////////////////
-
-
-
-
-
     
     await cloudinary.uploader.destroy(publicId);
     res.json({msg: "OK"});
@@ -169,8 +178,7 @@ const getActiveProducts = (callback) => {
 
 const getByCategory = (req, callback) => {
   const params = [req.query.Category];
-  let sql = `SELECT *
-             FROM ProdutosVinho
+  let sql = `SELECT * FROM ProdutosVinho
              WHERE (TipoVinho LIKE ?)
              ORDER BY TipoVinho, DescricaoVinho`;
   connection.query(sql, params, function (error, rows) {
@@ -180,11 +188,19 @@ const getByCategory = (req, callback) => {
 
 const getActivesByCategory = (req, callback) => {
   const params = [req.query.Category];
-  let sql = `SELECT *
-             FROM ProdutosVinho
+  let sql = `SELECT * FROM ProdutosVinho
              WHERE (TipoVinho LIKE ?) and (StatusVinho <> 0)
              ORDER BY TipoVinho, DescricaoVinho`;
   connection.query(sql, params, function (error, rows) {
+    return callback(error, rows);
+  });
+};
+
+const getActivesInPromotion = (callback) => {
+  let sql = `SELECT * FROM ProdutosVinho
+             WHERE (EmPromocaoVinho = 1) and (StatusVinho <> 0)
+             ORDER BY DescricaoVinho`;
+  connection.query(sql, [], function (error, rows) {
     return callback(error, rows);
   });
 };
@@ -195,6 +211,18 @@ const getByName = (req, callback) => {
   let sql = `SELECT *
              FROM ProdutosVinho
              WHERE (DescricaoVinho LIKE ?)
+             ORDER BY DescricaoVinho`;
+  connection.query(sql, params, function (error, rows) {
+    return callback(error, rows);
+  });
+};
+
+const getActivesByName = (req, callback) => {
+  const stringParam = `%${req.query.DescricaoVinho}%`;
+  const params = [stringParam, stringParam];
+  let sql = `SELECT *
+             FROM ProdutosVinho
+             WHERE (DescricaoVinho LIKE ?) and (StatusVinho <> 0)
              ORDER BY DescricaoVinho`;
   connection.query(sql, params, function (error, rows) {
     return callback(error, rows);
