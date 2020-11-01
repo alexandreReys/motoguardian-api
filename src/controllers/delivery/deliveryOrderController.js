@@ -11,6 +11,13 @@ exports.getAll = function (req, res) {
 };
 
 exports.getById = function (req, res) {
+  const getOrderById = (req, callback) => {
+    let sql = "SELECT * FROM delivery_order WHERE (IdOrder = ?)";
+    connection.query(sql, [req.params.idOrder], function (error, rows) {
+      return callback(error, rows);
+    });
+  };
+
   getOrderById(req, (err, rows) => {
     if (err) return handleError(err);
     res.json(rows);
@@ -212,17 +219,6 @@ const getAllOrders = (req, callback) => {
       return callback(error, rows);
     });
   }
-};
-
-const getOrderById = (req, callback) => {
-  let sql = `
-    SELECT * 
-    FROM delivery_order 
-    WHERE (IdOrder = ?)
-  `;
-  connection.query(sql, [req.params.idOrder], function (error, rows) {
-    return callback(error, rows);
-  });
 };
 
 const getOrderByStatus = (req, callback) => {

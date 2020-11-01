@@ -59,10 +59,16 @@ const get_all = (callback) => {
 const insert = (req, callback) => {
   const dados = req.body;
   const sql = `INSERT INTO delivery_settings ( 
-                AddressSellerSettings, ShippingTaxSettings 
+                AddressSellerSettings, ShippingTaxSettings, 
+                AppBannerSettings, AppBannerPublicIdSettings 
               ) 
-              VALUES ( ?, ? )`;
-  const params = [dados.AddressSellerSettings, dados.ShippingTaxSettings];
+              VALUES ( ?, ?, ?, ? )`;
+  const params = [
+    dados.AddressSellerSettings, 
+    dados.ShippingTaxSettings,
+    dados.AppBannerSettings,
+    dados.AppBannerPublicIdSettings
+  ];
   connection.query(sql, params, function (err, rows) {
     return callback(err, rows);
   });
@@ -71,12 +77,15 @@ const insert = (req, callback) => {
 const update = (req, callback) => {
   const dados = req.body;
   const sql = `UPDATE delivery_settings 
-                SET AddressSellerSettings = ?, ShippingTaxSettings = ? 
+                SET AddressSellerSettings = ?, ShippingTaxSettings = ?, 
+                AppBannerSettings = ?, AppBannerPublicIdSettings = ? 
                 WHERE IdSettings = ?`;
   const params = [
     dados.AddressSellerSettings,
     dados.ShippingTaxSettings,
-    dados.IdSettings,
+    dados.AppBannerSettings,
+    dados.AppBannerPublicIdSettings,
+    dados.IdSettings
   ];
   connection.query(sql, params, function (err, rows) {
     return callback(err, rows);

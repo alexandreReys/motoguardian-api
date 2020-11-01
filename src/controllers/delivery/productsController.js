@@ -1,251 +1,251 @@
 const fs = require("fs");
 const { cloudinary } = require("../../config/cloudinary");
-const gdrive = require("../../services/gdrive/gdrive");
+// const gdrive = require("../../services/gdrive/gdrive");
 
 const connection = require("../../mysql-connection");
 const groupedMax5 = require("../../utils/groupBy");
 
 exports.getAll = function (req, res) {
-  getAll((err, rows) => {
-    if (err) return handleError(err);
-    res.json(rows);
-  });
+    getAll((err, rows) => {
+        if (err) return handleError(err);
+        res.json(rows);
+    });
 };
 
 exports.getProductsByName = function (req, res) {
-  getByName(req, (err, rows) => {
-    if (err) return handleError(err);
-    res.json(rows);
-  });
+    getByName(req, (err, rows) => {
+        if (err) return handleError(err);
+        res.json(rows);
+    });
 };
 
 exports.getActiveProductsByName = function (req, res) {
-  getActivesByName(req, (err, rows) => {
-    if (err) return handleError(err);
-    res.json(rows);
-  });
+    getActivesByName(req, (err, rows) => {
+        if (err) return handleError(err);
+        res.json(rows);
+    });
 };
 
 exports.getProductsByCategory = function (req, res) {
-  getByCategory(req, (err, rows) => {
-    if (err) return handleError(err);
-    res.json(rows);
-  });
+    getByCategory(req, (err, rows) => {
+        if (err) return handleError(err);
+        res.json(rows);
+    });
 };
 
 exports.getActiveProductsByCategory = function (req, res) {
-  getActivesByCategory(req, (err, rows) => {
-    if (err) return handleError(err);
-    res.json(rows);
-  });
+    getActivesByCategory(req, (err, rows) => {
+        if (err) return handleError(err);
+        res.json(rows);
+    });
 };
 
 exports.getActiveProductsInPromotion = function (req, res) {
-  getActivesInPromotion((err, rows) => {
-    if (err) return handleError(err);
-    res.json(rows);
-  });
+    getActivesInPromotion((err, rows) => {
+        if (err) return handleError(err);
+        res.json(rows);
+    });
 };
 
 exports.getProductsGroupedByCategory = function (req, res) {
-  getActiveProducts((err, rows) => {
-    if (err) return handleError(err);
-    let products = JSON.parse(JSON.stringify(rows));
-    products = groupedMax5(products, "TipoVinho");
-    res.send(products);
-  });
+    getActiveProducts((err, rows) => {
+        if (err) return handleError(err);
+        let products = JSON.parse(JSON.stringify(rows));
+        products = groupedMax5(products, "TipoVinho");
+        res.send(products);
+    });
 };
 
 exports.post = function (req, res) {
-  insertVinho(req, (err, rows) => {
-    if (err) return handleError(err);
-    res.json(rows);
-  });
+    insertVinho(req, (err, rows) => {
+        if (err) return handleError(err);
+        res.json(rows);
+    });
 };
 
-exports.postImage = function (req, res) {
-  const request = req.file;
-  gdrive.imageUpload(request.filename, request.path, (id) => {
-    fs.unlink(request.path, function (err) {
-      if (err) throw err;
-    });
-    const resp = `https://drive.google.com/uc?export=view&id=${id}`;
-    return res.json({ id: resp });
-  });
-};
+// exports.postImage = function (req, res) {
+//   const request = req.file;
+//   gdrive.imageUpload(request.filename, request.path, (id) => {
+//     fs.unlink(request.path, function (err) {
+//       if (err) throw err;
+//     });
+//     const resp = `https://drive.google.com/uc?export=view&id=${id}`;
+//     return res.json({ id: resp });
+//   });
+// };
 
 exports.put = function (req, res) {
-  updateVinho(req, (err, rows) => {
-    if (err) return handleError(err);
-    res.json(rows);
-  });
+    updateVinho(req, (err, rows) => {
+        if (err) return handleError(err);
+        res.json(rows);
+    });
 };
 
 exports.deactivate = function (req, res) {
-  deactivateProduct(req, (err, rows) => {
-    if (err) return handleError(err);
-    res.json(rows);
-  });
+    deactivateProduct(req, (err, rows) => {
+        if (err) return handleError(err);
+        res.json(rows);
+    });
 };
 
 exports.promotion = function (req, res) {
-  promotionProduct(req, (err, rows) => {
-    if (err) return handleError(err);
-    res.json(rows);
-  });
+    promotionProduct(req, (err, rows) => {
+        if (err) return handleError(err);
+        res.json(rows);
+    });
 };
 
 exports.promotionalPrice = function (req, res) {
-  setPromotionalPrice(req, (err, rows) => {
-    if (err) return handleError(err);
-    res.json(rows);
-  });
+    setPromotionalPrice(req, (err, rows) => {
+        if (err) return handleError(err);
+        res.json(rows);
+    });
 };
 
 exports.delete = function (req, res) {
-  deleteVinho(req, (err, rows) => {
-    if (err) return handleError(err);
-    res.json(rows);
-  });
+    deleteVinho(req, (err, rows) => {
+        if (err) return handleError(err);
+        res.json(rows);
+    });
 };
 
 exports.uploadProductImage = async function (req, res) {
-  try {
-    const base64Image = req.body.data;
+    try {
+        const base64Image = req.body.data;
 
-    const response = await cloudinary.uploader.
-      upload(base64Image, { upload_preset: 'adega_da_vila' });
+        const response = await cloudinary.uploader.upload(
+            base64Image,
+            { upload_preset: 'adega_da_vila' }
+        );
 
-    res.json({
-      url: response.url,
-      public_id: response.public_id,
-    });
-  } catch (error) {
-    console.error(error);
+        res.json({
+            url: response.url,
+            public_id: response.public_id,
+        });
+    } catch (error) {
+        console.error(error);
 
-    res.status(500).json({err: "Something went wrong"});
-  };
+        res.status(500).json({ err: "Something went wrong" });
+    };
 };
 
 exports.deleteProductImage = async function (req, res) {
-  try {
-    if (!req.query.Imagem1IdVinho) {
-      console.log( "deleteProductImage1", req.query);   ///////////////////////////////////////////////////////////
-      res.json({msg: "OK"});
-      return;
-    };
+    try {
+        if (!req.query.Imagem1IdVinho) {
+            res.json({ msg: "OK" });
+            return;
+        };
 
-    const publicId = req.query.Imagem1IdVinho;
-    console.log("deleteProductImage2", req.query);   ///////////////////////////////////////////////////////////
-    
-    await cloudinary.uploader.destroy(publicId);
-    res.json({msg: "OK"});
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({err: "Something went wrong"});
-  };
+        const publicId = req.query.Imagem1IdVinho;
+
+        await cloudinary.uploader.destroy(publicId);
+        res.json({ msg: "OK" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ err: "Something went wrong" });
+    };
 };
 
 ////////////////////////////////////////////////////////////////////////////////////
 
 const handleError = (err) => {
-  if (err.code == "ECONNRESET") {
-    console.log("Erro Query", err.code);
-    res.status(400).send({ message: "ECONNRESET" });
-  } else {
-    throw err;
-  }
+    if (err.code == "ECONNRESET") {
+        console.log("Erro Query", err.code);
+        res.status(400).send({ message: "ECONNRESET" });
+    } else {
+        throw err;
+    }
 };
 
 const getAll = (callback) => {
-  let sql = `SELECT *
+    let sql = `SELECT *
              FROM ProdutosVinho
              ORDER BY DescricaoVinho`;
-  connection.query(sql, function (error, rows) {
-    return callback(error, rows);
-  });
+    connection.query(sql, function (error, rows) {
+        return callback(error, rows);
+    });
 };
 
 const getActiveProducts = (callback) => {
-  let sql = `SELECT *
+    let sql = `SELECT *
              FROM ProdutosVinho
              WHERE StatusVinho <> 0 
              ORDER BY DescricaoVinho`;
-  connection.query(sql, function (error, rows) {
-    return callback(error, rows);
-  });
+    connection.query(sql, function (error, rows) {
+        return callback(error, rows);
+    });
 };
 
 const getByCategory = (req, callback) => {
-  const params = [req.query.Category];
-  let sql = `SELECT * FROM ProdutosVinho
+    const params = [req.query.Category];
+    let sql = `SELECT * FROM ProdutosVinho
              WHERE (TipoVinho LIKE ?)
              ORDER BY TipoVinho, DescricaoVinho`;
-  connection.query(sql, params, function (error, rows) {
-    return callback(error, rows);
-  });
+    connection.query(sql, params, function (error, rows) {
+        return callback(error, rows);
+    });
 };
 
 const getActivesByCategory = (req, callback) => {
-  const params = [req.query.Category];
-  let sql = `SELECT * FROM ProdutosVinho
+    const params = [req.query.Category];
+    let sql = `SELECT * FROM ProdutosVinho
              WHERE (TipoVinho LIKE ?) and (StatusVinho <> 0)
              ORDER BY TipoVinho, DescricaoVinho`;
-  connection.query(sql, params, function (error, rows) {
-    return callback(error, rows);
-  });
+    connection.query(sql, params, function (error, rows) {
+        return callback(error, rows);
+    });
 };
 
 const getActivesInPromotion = (callback) => {
-  let sql = `SELECT * FROM ProdutosVinho
+    let sql = `SELECT * FROM ProdutosVinho
              WHERE (EmPromocaoVinho = 1) and (StatusVinho <> 0)
              ORDER BY DescricaoVinho`;
-  connection.query(sql, [], function (error, rows) {
-    return callback(error, rows);
-  });
+    connection.query(sql, [], function (error, rows) {
+        return callback(error, rows);
+    });
 };
 
 const getByName = (req, callback) => {
-  const stringParam = `%${req.query.DescricaoVinho}%`;
-  const params = [stringParam, stringParam];
-  let sql = `SELECT *
+    const stringParam = `%${req.query.DescricaoVinho}%`;
+    const params = [stringParam, stringParam];
+    let sql = `SELECT *
              FROM ProdutosVinho
              WHERE (DescricaoVinho LIKE ?)
              ORDER BY DescricaoVinho`;
-  connection.query(sql, params, function (error, rows) {
-    return callback(error, rows);
-  });
+    connection.query(sql, params, function (error, rows) {
+        return callback(error, rows);
+    });
 };
 
 const getActivesByName = (req, callback) => {
-  const stringParam = `%${req.query.DescricaoVinho}%`;
-  const params = [stringParam, stringParam];
-  let sql = `SELECT *
+    const stringParam = `%${req.query.DescricaoVinho}%`;
+    const params = [stringParam, stringParam];
+    let sql = `SELECT *
              FROM ProdutosVinho
              WHERE (DescricaoVinho LIKE ?) and (StatusVinho <> 0)
              ORDER BY DescricaoVinho`;
-  connection.query(sql, params, function (error, rows) {
-    return callback(error, rows);
-  });
+    connection.query(sql, params, function (error, rows) {
+        return callback(error, rows);
+    });
 };
 
 const getFiveByCategory = (req, callback) => {
-  const stringParam = `%${req.query.Category}%`;
-  const params = [stringParam, stringParam];
-  let sql = `SELECT *
+    const stringParam = `%${req.query.Category}%`;
+    const params = [stringParam, stringParam];
+    let sql = `SELECT *
              FROM ProdutosVinho
              WHERE (TipoVinho LIKE ?)
              ORDER BY DescricaoVinho`;
-  //   LIMIT 0,5`;
-  connection.query(sql, params, function (error, rows) {
-    resultArray = JSON.parse(JSON.stringify(rows));
-    return callback(error, rows);
-  });
+    //   LIMIT 0,5`;
+    connection.query(sql, params, function (error, rows) {
+        resultArray = JSON.parse(JSON.stringify(rows));
+        return callback(error, rows);
+    });
 };
 
 const insertVinho = (req, callback) => {
-  const dados = req.body;
-  const sql = `INSERT INTO ProdutosVinho ( 
+    const dados = req.body;
+    const sql = `INSERT INTO ProdutosVinho ( 
       DescricaoVinho, 
       PrecoVinho,
       TipoVinho,
@@ -262,28 +262,28 @@ const insertVinho = (req, callback) => {
     VALUES ( 
       ?,?,?, ?,?,?, ?,?,?, ?,?,?
     )`;
-  const params = [
-    dados.DescricaoVinho,
-    dados.PrecoVinho,
-    dados.TipoVinho,
-    dados.ClassificacaoVinho,
-    dados.PaisVinho,
-    dados.GarrafaVinho,
-    dados.ComentarioVinho,
-    dados.CodigoErpVinho,
-    dados.Imagem1Vinho,
-    dados.Imagem1IdVinho,
-    dados.Imagem2Vinho,
-    dados.Imagem3Vinho,
-  ];
-  connection.query(sql, params, function (err, rows) {
-    return callback(err, rows);
-  });
+    const params = [
+        dados.DescricaoVinho,
+        dados.PrecoVinho,
+        dados.TipoVinho,
+        dados.ClassificacaoVinho,
+        dados.PaisVinho,
+        dados.GarrafaVinho,
+        dados.ComentarioVinho,
+        dados.CodigoErpVinho,
+        dados.Imagem1Vinho,
+        dados.Imagem1IdVinho,
+        dados.Imagem2Vinho,
+        dados.Imagem3Vinho,
+    ];
+    connection.query(sql, params, function (err, rows) {
+        return callback(err, rows);
+    });
 };
 
 const updateVinho = (req, callback) => {
-  const dados = req.body;
-  const sql = `UPDATE ProdutosVinho 
+    const dados = req.body;
+    const sql = `UPDATE ProdutosVinho 
      SET 
        DescricaoVinho = ?,
        PrecoVinho = ?,
@@ -299,67 +299,67 @@ const updateVinho = (req, callback) => {
        Imagem3Vinho = ?
     WHERE 
       idVinho = ?`;
-  const params = [
-    dados.DescricaoVinho,
-    dados.PrecoVinho,
-    dados.TipoVinho,
-    dados.ClassificacaoVinho,
-    dados.PaisVinho,
-    dados.GarrafaVinho,
-    dados.ComentarioVinho,
-    dados.CodigoErpVinho,
-    dados.Imagem1Vinho,
-    dados.Imagem1IdVinho,
-    dados.Imagem2Vinho,
-    dados.Imagem3Vinho,
-    dados.IdVinho,
-  ];
-  connection.query(sql, params, function (err, rows) {
-    return callback(err, rows);
-  });
+    const params = [
+        dados.DescricaoVinho,
+        dados.PrecoVinho,
+        dados.TipoVinho,
+        dados.ClassificacaoVinho,
+        dados.PaisVinho,
+        dados.GarrafaVinho,
+        dados.ComentarioVinho,
+        dados.CodigoErpVinho,
+        dados.Imagem1Vinho,
+        dados.Imagem1IdVinho,
+        dados.Imagem2Vinho,
+        dados.Imagem3Vinho,
+        dados.IdVinho,
+    ];
+    connection.query(sql, params, function (err, rows) {
+        return callback(err, rows);
+    });
 };
 
 const deactivateProduct = (req, callback) => {
-  const dados = req.body;
-  const sql = 
-    `UPDATE ProdutosVinho 
+    const dados = req.body;
+    const sql =
+        `UPDATE ProdutosVinho 
      SET StatusVinho = ? 
      WHERE IdVinho = ?`;
-  const params = [ dados.StatusVinho, dados.IdVinho ];
-  connection.query(sql, params, function (err, rows) {
-    return callback(err, rows);
-  });
+    const params = [dados.StatusVinho, dados.IdVinho];
+    connection.query(sql, params, function (err, rows) {
+        return callback(err, rows);
+    });
 };
 
 const promotionProduct = (req, callback) => {
-  const dados = req.body;
-  const sql = 
-    `UPDATE ProdutosVinho 
+    const dados = req.body;
+    const sql =
+        `UPDATE ProdutosVinho 
      SET EmPromocaoVinho = ? 
      WHERE IdVinho = ?`;
-  const params = [ dados.EmPromocaoVinho, dados.IdVinho ];
-  connection.query(sql, params, function (err, rows) {
-    return callback(err, rows);
-  });
+    const params = [dados.EmPromocaoVinho, dados.IdVinho];
+    connection.query(sql, params, function (err, rows) {
+        return callback(err, rows);
+    });
 };
 
 const setPromotionalPrice = (req, callback) => {
-  const dados = req.body;
-  const sql = 
-    `UPDATE ProdutosVinho 
+    const dados = req.body;
+    const sql =
+        `UPDATE ProdutosVinho 
      SET PrecoPromocionalVinho = ? 
      WHERE IdVinho = ?`;
-  const params = [ dados.PrecoPromocionalVinho, dados.IdVinho ];
-  connection.query(sql, params, function (err, rows) {
-    return callback(err, rows);
-  });
+    const params = [dados.PrecoPromocionalVinho, dados.IdVinho];
+    connection.query(sql, params, function (err, rows) {
+        return callback(err, rows);
+    });
 };
 
 const deleteVinho = (req, callback) => {
-  const { IdVinho } = req.query;
-  const sql = "DELETE FROM ProdutosVinho WHERE IdVinho = ?";
-  const params = [IdVinho];
-  connection.query(sql, params, function (err, rows) {
-    return callback(err, rows);
-  });
+    const { IdVinho } = req.query;
+    const sql = "DELETE FROM ProdutosVinho WHERE IdVinho = ?";
+    const params = [IdVinho];
+    connection.query(sql, params, function (err, rows) {
+        return callback(err, rows);
+    });
 };

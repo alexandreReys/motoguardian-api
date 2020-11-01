@@ -3,11 +3,11 @@ const deliveryOrderControler = require("../../controllers/delivery/deliveryOrder
 
 const router = Router();
 
-router.get("/deliveryman-status", deliveryOrderControler.getByDeliveryManStatus);
 router.get("/", deliveryOrderControler.getAll);
 router.get("/:idOrder", deliveryOrderControler.getById);
 router.get("/status/:status", deliveryOrderControler.getByStatus);
 router.get("/items/:idOrder", deliveryOrderControler.getItems);
+router.get("/deliveryman-status", deliveryOrderControler.getByDeliveryManStatus);
 router.get("/history/:idOrder", deliveryOrderControler.getHistory);
 router.get("/postal-code/:postalCode", deliveryOrderControler.getCep);
 

@@ -1,6 +1,6 @@
 const { Router } = require("express");
-const multer = require("multer");
-const multerConfig = require("../../config/multer");
+// const multer = require("multer");
+// const multerConfig = require("../../config/multer");
 const productsController = require("../../controllers/delivery/productsController");
 const Authorization = require("../../middlewares/Authz");
 
@@ -14,8 +14,8 @@ router.get("/category/actives", productsController.getActiveProductsByCategory);
 router.get("/category/grouped", productsController.getProductsGroupedByCategory);
 router.get("/promotion/actives", productsController.getActiveProductsInPromotion);
 
+// router.post("/image", Authorization, multer(multerConfig).single("file"), productsController.postImage);
 router.post("/", Authorization, productsController.post);
-router.post("/image", Authorization, multer(multerConfig).single("file"), productsController.postImage);
 router.post("/img", Authorization, productsController.uploadProductImage);
 
 router.put("/", Authorization, productsController.put);

@@ -11,6 +11,7 @@ const clientesRouter = require("./moto-help/clientesRouter");
 const veiculosRouter = require("./moto-help/veiculosRouter");
 
 const productsRouter = require("./delivery/productsRouter");
+const imagesRouter = require("./delivery/imagesRouter");
 const deliveryOrderRouter = require("./delivery/deliveryOrderRouter");
 const deliveryPushRouter = require("./delivery/deliveryPushRouter");
 const deliverymanRouter = require("./delivery/deliverymanRouter");
@@ -42,6 +43,7 @@ router.use("/clientes", Authorization, clientesRouter);
 router.use("/veiculos", Authorization, veiculosRouter);
 
 router.use("/products", productsRouter);
+router.use("/images", imagesRouter);
 
 router.use("/delivery-order", deliveryOrderRouter);
 router.use("/delivery-push-notification", deliveryPushRouter);
