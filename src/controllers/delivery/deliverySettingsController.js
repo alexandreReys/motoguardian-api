@@ -2,10 +2,19 @@ const axios = require("axios");
 const connection = require("../../mysql-connection");
 
 exports.getAll = function (req, res) {
-  get_all((err, rows) => {
+  get((err, rows) => {
     if (err) return handleError(err);
     res.json(rows);
   });
+
+  function get(callback) {
+    let sql = `SELECT *
+               FROM delivery_settings
+               ORDER BY IdSettings`;
+    connection.query(sql, function (error, rows) {
+      return callback(error, rows);
+    });
+  };
 };
 
 exports.post = function (req, res) {
@@ -13,6 +22,27 @@ exports.post = function (req, res) {
     if (err) return handleError(err);
     res.json(rows);
   });
+
+  function insert(req, callback) {
+    const dados = req.body;
+    const sql = `INSERT INTO delivery_settings ( 
+                  AddressSellerSettings, ShippingTaxSettings, 
+                  AppBannerSettings, AppBannerPublicIdSettings, 
+                  WebBannerSettings, WebBannerPublicIdSettings 
+                ) 
+                VALUES ( ?, ?, ?, ?, ?, ? )`;
+    const params = [
+      dados.AddressSellerSettings, 
+      dados.ShippingTaxSettings,
+      dados.AppBannerSettings,
+      dados.AppBannerPublicIdSettings,
+      dados.WebBannerSettings,
+      dados.WebBannerPublicIdSettings
+    ];
+    connection.query(sql, params, function (err, rows) {
+      return callback(err, rows);
+    });
+  };
 };
 
 exports.put = function (req, res) {
@@ -20,13 +50,44 @@ exports.put = function (req, res) {
     if (err) return handleError(err);
     res.json(rows);
   });
+
+  function update(req, callback) {
+    const dados = req.body;
+    const sql = `UPDATE delivery_settings 
+                  SET AddressSellerSettings = ?, ShippingTaxSettings = ?, 
+                  AppBannerSettings = ?, AppBannerPublicIdSettings = ?, 
+                  WebBannerSettings = ?, WebBannerPublicIdSettings = ? 
+                  WHERE IdSettings = ?`;
+    const params = [
+      dados.AddressSellerSettings,
+      dados.ShippingTaxSettings,
+      dados.AppBannerSettings,
+      dados.AppBannerPublicIdSettings,
+      dados.WebBannerSettings,
+      dados.WebBannerPublicIdSettings,
+      dados.IdSettings
+    ];
+    connection.query(sql, params, function (err, rows) {
+      return callback(err, rows);
+    });
+  };
+
 };
 
 exports.delete = function (req, res) {
-  delete2(req, (err, rows) => {
+  dbDelete(req, (err, rows) => {
     if (err) return handleError(err);
     res.json(rows);
   });
+
+  function dbDelete(req, callback) {
+    const { IdSettings } = req.query;
+    const sql = "DELETE FROM delivery_settings WHERE IdSettings = ?";
+    const params = [IdSettings];
+    connection.query(sql, params, function (err, rows) {
+      return callback(err, rows);
+    });
+  };
 };
 
 exports.getDistance = function (req, res) {
@@ -34,6 +95,40 @@ exports.getDistance = function (req, res) {
     if (err) return handleError(err);
     res.json(rows);
   });
+
+  async function get_distance(req, callback) {
+    let sql = `SELECT AddressSellerSettings
+               FROM delivery_settings`;
+    connection.query(sql, async function (error, rows) {
+      if (error) return callback(error, rows);
+  
+      let str1 = rows[0].AddressSellerSettings.replace(/ /g, "+");
+      const sellerAddress = str1.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  
+      str1 = req.params.address.replace(/ /g, "+");
+      const customerAddress = str1.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  
+      const distance = await getGoogleDistanceMatrix(sellerAddress, customerAddress);
+  
+      return callback(null, distance.rows[0].elements[0]);
+    });
+  };
+  
+  async function getGoogleDistanceMatrix(sellerAddress, customerAddress) {
+    const urlBase = "https://maps.googleapis.com/maps/api/distancematrix/json";
+    const googleApiKey = "AIzaSyB5IWWfcdld42TCGEV9FogbKZnLJf4s1xU";
+  
+    const url = `${urlBase}?origins=${sellerAddress}&destinations=${customerAddress}&key=${googleApiKey}`;
+  
+    var response;
+    try {
+      response = await axios.get(url);
+    } catch (error) { 
+      return error 
+    };
+    
+    return response.data;
+  };
 };
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -45,92 +140,4 @@ const handleError = (err) => {
   } else {
     throw err;
   }
-};
-
-const get_all = (callback) => {
-  let sql = `SELECT *
-             FROM delivery_settings
-             ORDER BY IdSettings`;
-  connection.query(sql, function (error, rows) {
-    return callback(error, rows);
-  });
-};
-
-const insert = (req, callback) => {
-  const dados = req.body;
-  const sql = `INSERT INTO delivery_settings ( 
-                AddressSellerSettings, ShippingTaxSettings, 
-                AppBannerSettings, AppBannerPublicIdSettings 
-              ) 
-              VALUES ( ?, ?, ?, ? )`;
-  const params = [
-    dados.AddressSellerSettings, 
-    dados.ShippingTaxSettings,
-    dados.AppBannerSettings,
-    dados.AppBannerPublicIdSettings
-  ];
-  connection.query(sql, params, function (err, rows) {
-    return callback(err, rows);
-  });
-};
-
-const update = (req, callback) => {
-  const dados = req.body;
-  const sql = `UPDATE delivery_settings 
-                SET AddressSellerSettings = ?, ShippingTaxSettings = ?, 
-                AppBannerSettings = ?, AppBannerPublicIdSettings = ? 
-                WHERE IdSettings = ?`;
-  const params = [
-    dados.AddressSellerSettings,
-    dados.ShippingTaxSettings,
-    dados.AppBannerSettings,
-    dados.AppBannerPublicIdSettings,
-    dados.IdSettings
-  ];
-  connection.query(sql, params, function (err, rows) {
-    return callback(err, rows);
-  });
-};
-
-const delete2 = (req, callback) => {
-  const { IdSettings } = req.query;
-  const sql = "DELETE FROM delivery_settings WHERE IdSettings = ?";
-  const params = [IdSettings];
-  connection.query(sql, params, function (err, rows) {
-    return callback(err, rows);
-  });
-};
-
-const get_distance = async (req, callback) => {
-  let sql = `SELECT AddressSellerSettings
-             FROM delivery_settings`;
-  connection.query(sql, async function (error, rows) {
-    if (error) return callback(error, rows);
-
-    let str1 = rows[0].AddressSellerSettings.replace(/ /g, "+");
-    const sellerAddress = str1.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-
-    str1 = req.params.address.replace(/ /g, "+");
-    const customerAddress = str1.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-
-    const distance = await getGoogleDistanceMatrix(sellerAddress, customerAddress);
-
-    return callback(null, distance.rows[0].elements[0]);
-  });
-};
-
-const getGoogleDistanceMatrix = async (sellerAddress, customerAddress) => {
-  const urlBase = "https://maps.googleapis.com/maps/api/distancematrix/json";
-  const googleApiKey = "AIzaSyB5IWWfcdld42TCGEV9FogbKZnLJf4s1xU";
-
-  const url = `${urlBase}?origins=${sellerAddress}&destinations=${customerAddress}&key=${googleApiKey}`;
-
-  var response;
-  try {
-    response = await axios.get(url);
-  } catch (error) { 
-    return error 
-  };
-  
-  return response.data;
 };
