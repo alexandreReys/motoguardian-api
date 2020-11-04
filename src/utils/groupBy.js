@@ -350,3 +350,11 @@ module.exports = function groupedMax5(list, prop) {
 //     }
 //   ]
 // }
+
+module.exports = function groupedMax6(list, prop) {
+  return Object.fromEntries(
+    Object.entries(groupBy(list, prop))
+      .filter((arr) => arr[0] != "")
+      .map((arr) => [arr[0], arr[1].slice(0, 6)])
+  );
+};

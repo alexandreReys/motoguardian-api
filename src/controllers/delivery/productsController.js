@@ -3,7 +3,7 @@ const { cloudinary } = require("../../config/cloudinary");
 // const gdrive = require("../../services/gdrive/gdrive");
 
 const connection = require("../../mysql-connection");
-const groupedMax5 = require("../../utils/groupBy");
+const groupedMax6 = require("../../utils/groupBy");
 
 exports.getAll = function (req, res) {
     getAll((err, rows) => {
@@ -51,7 +51,7 @@ exports.getProductsGroupedByCategory = function (req, res) {
     getActiveProducts((err, rows) => {
         if (err) return handleError(err);
         let products = JSON.parse(JSON.stringify(rows));
-        products = groupedMax5(products, "TipoVinho");
+        products = groupedMax6(products, "TipoVinho");
         res.send(products);
     });
 };
