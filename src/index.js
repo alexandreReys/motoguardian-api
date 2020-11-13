@@ -12,4 +12,7 @@ app.use(router);
 
 const port = process.env.PORT;
 
-app.listen(port, () => console.log(`Server on Port:${port}`));
+app.listen(port, () => {
+    console.log(`Server on Port:${port}`);
+    console.log(process.env.DB_DATAB);
+});
