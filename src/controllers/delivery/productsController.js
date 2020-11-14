@@ -1,6 +1,7 @@
+require('dotenv').config();
+
 const fs = require("fs");
 const { cloudinary } = require("../../config/cloudinary");
-// const gdrive = require("../../services/gdrive/gdrive");
 
 const connection = require("../../mysql-connection");
 const groupedMax6 = require("../../utils/groupBy");
@@ -61,18 +62,46 @@ exports.post = function (req, res) {
         if (err) return handleError(err);
         res.json(rows);
     });
-};
 
-// exports.postImage = function (req, res) {
-//   const request = req.file;
-//   gdrive.imageUpload(request.filename, request.path, (id) => {
-//     fs.unlink(request.path, function (err) {
-//       if (err) throw err;
-//     });
-//     const resp = `https://drive.google.com/uc?export=view&id=${id}`;
-//     return res.json({ id: resp });
-//   });
-// };
+    function insertVinho(req, callback) {
+        const dados = req.body;
+        const sql = `INSERT INTO ProdutosVinho ( 
+          DescricaoVinho, 
+          PrecoVinho,
+          TipoVinho,
+          ClassificacaoVinho,
+          PaisVinho,
+          GarrafaVinho,
+          ComentarioVinho,
+          CodigoErpVinho,
+          Imagem1Vinho,
+          Imagem1IdVinho,
+          Imagem2Vinho,
+          Imagem3Vinho
+        ) 
+        VALUES ( 
+          ?,?,?, ?,?,?, ?,?,?, ?,?,?
+        )`;
+        const params = [
+            dados.DescricaoVinho,
+            dados.PrecoVinho,
+            dados.TipoVinho,
+            dados.ClassificacaoVinho,
+            dados.PaisVinho,
+            dados.GarrafaVinho,
+            dados.ComentarioVinho,
+            dados.CodigoErpVinho,
+            dados.Imagem1Vinho,
+            dados.Imagem1IdVinho,
+            dados.Imagem2Vinho,
+            dados.Imagem3Vinho,
+        ];
+        connection.query(sql, params, function (err, rows) {
+            return callback(err, rows);
+        });
+    };
+
+};
 
 exports.put = function (req, res) {
     updateVinho(req, (err, rows) => {
@@ -110,12 +139,14 @@ exports.delete = function (req, res) {
 };
 
 exports.uploadProductImage = async function (req, res) {
+    console.log("process.env.CLOUDINARY_UPLOAD_PRESET", process.env.CLOUDINARY_UPLOAD_PRESET);
+    
     try {
         const base64Image = req.body.data;
 
         const response = await cloudinary.uploader.upload(
             base64Image,
-            { upload_preset: 'adega_da_vila' }
+            { upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET }
         );
 
         res.json({
@@ -240,44 +271,6 @@ const getFiveByCategory = (req, callback) => {
     connection.query(sql, params, function (error, rows) {
         resultArray = JSON.parse(JSON.stringify(rows));
         return callback(error, rows);
-    });
-};
-
-const insertVinho = (req, callback) => {
-    const dados = req.body;
-    const sql = `INSERT INTO ProdutosVinho ( 
-      DescricaoVinho, 
-      PrecoVinho,
-      TipoVinho,
-      ClassificacaoVinho,
-      PaisVinho,
-      GarrafaVinho,
-      ComentarioVinho,
-      CodigoErpVinho,
-      Imagem1Vinho,
-      Imagem1IdVinho,
-      Imagem2Vinho,
-      Imagem3Vinho
-    ) 
-    VALUES ( 
-      ?,?,?, ?,?,?, ?,?,?, ?,?,?
-    )`;
-    const params = [
-        dados.DescricaoVinho,
-        dados.PrecoVinho,
-        dados.TipoVinho,
-        dados.ClassificacaoVinho,
-        dados.PaisVinho,
-        dados.GarrafaVinho,
-        dados.ComentarioVinho,
-        dados.CodigoErpVinho,
-        dados.Imagem1Vinho,
-        dados.Imagem1IdVinho,
-        dados.Imagem2Vinho,
-        dados.Imagem3Vinho,
-    ];
-    connection.query(sql, params, function (err, rows) {
-        return callback(err, rows);
     });
 };
 

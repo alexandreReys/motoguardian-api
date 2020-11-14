@@ -14,5 +14,6 @@ const port = process.env.PORT;
 
 app.listen(port, () => {
     console.log(`Server on Port:${port}`);
+    console.log(process.env.CLOUDINARY_UPLOAD_PRESET);
     console.log(process.env.DB_DATAB);
 });

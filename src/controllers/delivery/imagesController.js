@@ -1,16 +1,14 @@
+require('dotenv').config();
+
 const { cloudinary } = require("../../config/cloudinary");
 
 exports.upload = async function (req, res) {
+    const uploadApiOptions = { upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET };
+    console.log("uploadApiOptions", uploadApiOptions);
+    
     try {
-        const response = await cloudinary.uploader.upload(
-            req.body.data,
-            { upload_preset: 'adega_da_vila' }
-        );
-
-        res.json({
-            url: response.url,
-            public_id: response.public_id,
-        });
+        const response = await cloudinary.uploader.upload(req.body.data, uploadApiOptions);
+        res.json({ url: response.url, public_id: response.public_id });
     } catch (error) {
         console.error(error);
         res.status(500).json({ err: "Something went wrong" });
