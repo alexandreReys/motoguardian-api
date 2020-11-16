@@ -28,6 +28,7 @@ exports.post = function (req, res) {
     const sql = `INSERT INTO delivery_settings ( 
                   AddressSellerSettings, ShippingTaxSettings, 
                   AppBannerSettings, AppBannerPublicIdSettings, 
+                  AppLogoPSettings, AppLogoPPublicIdSettings, 
                   WebBannerSettings, WebBannerPublicIdSettings 
                 ) 
                 VALUES ( ?, ?, ?, ?, ?, ? )`;
@@ -36,6 +37,8 @@ exports.post = function (req, res) {
       dados.ShippingTaxSettings,
       dados.AppBannerSettings,
       dados.AppBannerPublicIdSettings,
+      dados.AppLogoPSettings,
+      dados.AppLogoPPublicIdSettings,
       dados.WebBannerSettings,
       dados.WebBannerPublicIdSettings
     ];
@@ -56,6 +59,7 @@ exports.put = function (req, res) {
     const sql = `UPDATE delivery_settings 
                   SET AddressSellerSettings = ?, ShippingTaxSettings = ?, 
                   AppBannerSettings = ?, AppBannerPublicIdSettings = ?, 
+                  AppLogoPSettings = ?, AppLogoPPublicIdSettings = ?, 
                   WebBannerSettings = ?, WebBannerPublicIdSettings = ? 
                   WHERE IdSettings = ?`;
     const params = [
@@ -63,6 +67,8 @@ exports.put = function (req, res) {
       dados.ShippingTaxSettings,
       dados.AppBannerSettings,
       dados.AppBannerPublicIdSettings,
+      dados.AppLogoPSettings,
+      dados.AppLogoPPublicIdSettings,
       dados.WebBannerSettings,
       dados.WebBannerPublicIdSettings,
       dados.IdSettings
