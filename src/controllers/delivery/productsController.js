@@ -5,6 +5,7 @@ const { cloudinary } = require("../../config/cloudinary");
 
 const connection = require("../../mysql-connection");
 const groupedMax6 = require("../../utils/groupBy");
+const productsRepository = require("../../repositories/delivery/productsRepository");
 
 exports.getAll = function (req, res) {
     getAll((err, rows) => {
@@ -58,49 +59,10 @@ exports.getProductsGroupedByCategory = function (req, res) {
 };
 
 exports.post = function (req, res) {
-    insertVinho(req, (err, rows) => {
+    productsRepository.insertVinho(req, (err, rows) => {
         if (err) return handleError(err);
         res.json(rows);
     });
-
-    function insertVinho(req, callback) {
-        const dados = req.body;
-        const sql = `INSERT INTO ProdutosVinho ( 
-          DescricaoVinho, 
-          PrecoVinho,
-          TipoVinho,
-          ClassificacaoVinho,
-          PaisVinho,
-          GarrafaVinho,
-          ComentarioVinho,
-          CodigoErpVinho,
-          Imagem1Vinho,
-          Imagem1IdVinho,
-          Imagem2Vinho,
-          Imagem3Vinho
-        ) 
-        VALUES ( 
-          ?,?,?, ?,?,?, ?,?,?, ?,?,?
-        )`;
-        const params = [
-            dados.DescricaoVinho,
-            dados.PrecoVinho,
-            dados.TipoVinho,
-            dados.ClassificacaoVinho,
-            dados.PaisVinho,
-            dados.GarrafaVinho,
-            dados.ComentarioVinho,
-            dados.CodigoErpVinho,
-            dados.Imagem1Vinho,
-            dados.Imagem1IdVinho,
-            dados.Imagem2Vinho,
-            dados.Imagem3Vinho,
-        ];
-        connection.query(sql, params, function (err, rows) {
-            return callback(err, rows);
-        });
-    };
-
 };
 
 exports.put = function (req, res) {
