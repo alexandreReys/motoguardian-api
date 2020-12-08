@@ -54,7 +54,7 @@ exports.getProductsGroupedByCategory = function (req, res) {
         if (err) return handleError(err);
         let products = JSON.parse(JSON.stringify(rows));
 
-        console.log('products', products);
+        console.log('>>>>>>>>>>>>>>>>>>>   products', products);
 
         products = groupedMax6(products, "TipoVinho");
         res.send(products);
