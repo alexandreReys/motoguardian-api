@@ -352,6 +352,7 @@ module.exports = function groupedMax5(list, prop) {
 // }
 
 module.exports = function groupedMax6(list, prop) {
+  console.log("groupedMax6-list", list);
   return Object.fromEntries(
     Object.entries(groupBy(list, prop))
       .filter((arr) => arr[0] != "")
