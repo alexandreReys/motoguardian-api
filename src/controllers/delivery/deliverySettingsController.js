@@ -115,7 +115,7 @@ exports.getDistance = function (req, res) {
       const customerAddress = str1.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   
       const distance = await getGoogleDistanceMatrix(sellerAddress, customerAddress);
-  
+
       return callback(null, distance.rows[0].elements[0]);
     });
   };
@@ -123,16 +123,14 @@ exports.getDistance = function (req, res) {
   async function getGoogleDistanceMatrix(sellerAddress, customerAddress) {
     const urlBase = "https://maps.googleapis.com/maps/api/distancematrix/json";
     const googleApiKey = "AIzaSyB5IWWfcdld42TCGEV9FogbKZnLJf4s1xU";
-  
     const url = `${urlBase}?origins=${sellerAddress}&destinations=${customerAddress}&key=${googleApiKey}`;
-  
     var response;
     try {
       response = await axios.get(url);
     } catch (error) { 
+      console.error("getGoogleDistanceMatrix / axios.get(url)", error);
       return error 
     };
-    
     return response.data;
   };
 };

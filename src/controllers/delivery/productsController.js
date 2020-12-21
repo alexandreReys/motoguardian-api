@@ -4,7 +4,7 @@ const fs = require("fs");
 const { cloudinary } = require("../../config/cloudinary");
 
 const connection = require("../../mysql-connection");
-const groupedMax6 = require("../../utils/groupBy");
+const { groupedMax5 } = require("../../utils/groupBy");
 const productsRepository = require("../../repositories/delivery/productsRepository");
 
 exports.getAll = function (req, res) {
@@ -53,11 +53,7 @@ exports.getProductsGroupedByCategory = function (req, res) {
     getActiveProducts((err, rows) => {
         if (err) return handleError(err);
         let products = JSON.parse(JSON.stringify(rows));
-
-        console.log("==========================================================");
-        console.log("================>>   products", products);
-
-        products = groupedMax6(products, "TipoVinho");
+        products = groupedMax5(products, "TipoVinho");
         res.send(products);
     });
 };
