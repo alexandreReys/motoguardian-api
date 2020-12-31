@@ -49,6 +49,7 @@ router.use("/delivery-order", deliveryOrderRouter);
 router.use("/delivery-push-notification", deliveryPushRouter);
 router.use("/deliveryman", deliverymanRouter);
 router.use("/category", categoryRouter);
+
 router.use("/delivery-settings", deliverySettingsRouter);
 
 module.exports = router;

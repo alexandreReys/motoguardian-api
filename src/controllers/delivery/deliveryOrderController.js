@@ -205,7 +205,7 @@ exports.post = function (req, res) {
     }); ''
 };
 
-exports.getCep = async (req, res) => {
+exports.getCepAberto = async (req, res) => {
     let url = `http://www.cepaberto.com/api/v3/cep?cep=${req.params.postalCode}`;
 
     let token = "token=49efb81e24adb56f15982971515a92fc";
@@ -215,7 +215,32 @@ exports.getCep = async (req, res) => {
         const response = await axios.get(url, headers);
         res.status(200).send(response.data);
     } catch (e) {
-        console.log(e.message);
+        console.log("delivery-order / http://www.cepaberto.com error  ==>>  ", e.message);
+        return res.status(400).send(e);
+    }
+};
+
+exports.getCep = async (req, res) => {
+    let url = `https://viacep.com.br/ws/${req.params.postalCode}/json/`;
+
+    try {
+        const response = await axios.get(url);
+        const address = response.data;
+
+        const result = {
+            logradouro: address.logradouro,
+            bairro: address.bairro,
+            cidade: {
+                nome: address.localidade,
+            },
+            estado: {
+                sigla: address.uf,
+            },
+        };
+
+        res.status(200).send(result);
+    } catch (e) {
+        console.log("delivery-order / http://www.viacep.com error  ==>>  ", e.message);
         return res.status(400).send(e);
     }
 };
