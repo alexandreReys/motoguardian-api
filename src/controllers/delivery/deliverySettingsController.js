@@ -123,7 +123,7 @@ exports.getDistance = function (req, res) {
   
   async function getGoogleDistanceMatrix(sellerAddress, customerAddress) {
     const urlBase = "https://maps.googleapis.com/maps/api/distancematrix/json";
-    const googleApiKey = "AIzaSyB5IWWfcdld42TCGEV9FogbKZnLJf4s1xU";
+    const googleApiKey = process.env.GOOGLE_API_KEY;
     
     const url = `${urlBase}?origins=${sellerAddress}&destinations=${customerAddress}&key=${googleApiKey}`;
     var response;
