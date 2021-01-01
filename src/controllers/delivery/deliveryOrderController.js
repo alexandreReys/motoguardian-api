@@ -1,3 +1,4 @@
+require("dotenv").config();
 const axios = require("axios");
 const connection = require("../../mysql-connection");
 const getDateNow = require("../../utils/getDateNow");
@@ -206,10 +207,10 @@ exports.post = function (req, res) {
 };
 
 exports.getCepAberto = async (req, res) => {
-    let url = `http://www.cepaberto.com/api/v3/cep?cep=${req.params.postalCode}`;
+    const url = `http://www.cepaberto.com/api/v3/cep?cep=${req.params.postalCode}`;
 
-    let token = "token=49efb81e24adb56f15982971515a92fc";
-    let headers = { headers: { Authorization: `Token ${token}` } };
+    const token = process.env.CEPABERTO_TOKEN;
+    const headers = { headers: { Authorization: `Token ${token}` } };
 
     try {
         const response = await axios.get(url, headers);
