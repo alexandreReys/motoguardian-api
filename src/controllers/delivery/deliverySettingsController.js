@@ -26,22 +26,33 @@ exports.post = function (req, res) {
 
   function insert(req, callback) {
     const dados = req.body;
-    const sql = `INSERT INTO delivery_settings ( 
-                  AddressSellerSettings, ShippingTaxSettings, 
-                  AppBannerSettings, AppBannerPublicIdSettings, 
-                  AppLogoPSettings, AppLogoPPublicIdSettings, 
-                  WebBannerSettings, WebBannerPublicIdSettings 
-                ) 
-                VALUES ( ?, ?, ?, ?, ?, ? )`;
+    const sql = 
+        `INSERT INTO delivery_settings ( 
+            AddressSellerSettings, ShippingTaxSettings, 
+            AppBannerSettings, AppBannerPublicIdSettings, 
+            AppLogoPSettings, AppLogoPPublicIdSettings, 
+            WebBannerSettings, WebBannerPublicIdSettings, 
+            DeliveryAreaDistance, UrlDeliveryMap, 
+            UrlGooglePlay, ContactPhone, 
+            ContactEmail, ContactWhatsapp 
+        ) 
+        VALUES ( ?, ?, ?, ?, ?, ? )`;
+
     const params = [
-      dados.AddressSellerSettings, 
-      dados.ShippingTaxSettings,
-      dados.AppBannerSettings,
-      dados.AppBannerPublicIdSettings,
-      dados.AppLogoPSettings,
-      dados.AppLogoPPublicIdSettings,
-      dados.WebBannerSettings,
-      dados.WebBannerPublicIdSettings
+        dados.AddressSellerSettings, 
+        dados.ShippingTaxSettings,
+        dados.AppBannerSettings,
+        dados.AppBannerPublicIdSettings,
+        dados.AppLogoPSettings,
+        dados.AppLogoPPublicIdSettings,
+        dados.WebBannerSettings,
+        dados.WebBannerPublicIdSettings,
+        dados.DeliveryAreaDistance,
+        dados.UrlDeliveryMap,
+        dados.UrlGooglePlay,
+        dados.ContactPhone,
+        dados.ContactEmail,
+        dados.ContactWhatsapp,
     ];
     connection.query(sql, params, function (err, rows) {
       return callback(err, rows);
@@ -57,28 +68,38 @@ exports.put = function (req, res) {
 
   function update(req, callback) {
     const dados = req.body;
-    const sql = `UPDATE delivery_settings 
-                  SET AddressSellerSettings = ?, ShippingTaxSettings = ?, 
-                  AppBannerSettings = ?, AppBannerPublicIdSettings = ?, 
-                  AppLogoPSettings = ?, AppLogoPPublicIdSettings = ?, 
-                  WebBannerSettings = ?, WebBannerPublicIdSettings = ? 
-                  WHERE IdSettings = ?`;
+    const sql = 
+    `UPDATE delivery_settings 
+     SET 
+        AddressSellerSettings = ?, ShippingTaxSettings = ?, 
+        AppBannerSettings = ?, AppBannerPublicIdSettings = ?, 
+        AppLogoPSettings = ?, AppLogoPPublicIdSettings = ?, 
+        WebBannerSettings = ?, WebBannerPublicIdSettings = ?, 
+        DeliveryAreaDistance = ?, UrlDeliveryMap = ?, 
+        UrlGooglePlay = ?, ContactPhone = ?, 
+        ContactEmail = ?, ContactWhatsapp = ? 
+     WHERE IdSettings = ?`;
     const params = [
-      dados.AddressSellerSettings,
-      dados.ShippingTaxSettings,
-      dados.AppBannerSettings,
-      dados.AppBannerPublicIdSettings,
-      dados.AppLogoPSettings,
-      dados.AppLogoPPublicIdSettings,
-      dados.WebBannerSettings,
-      dados.WebBannerPublicIdSettings,
-      dados.IdSettings
+        dados.AddressSellerSettings,
+        dados.ShippingTaxSettings,
+        dados.AppBannerSettings,
+        dados.AppBannerPublicIdSettings,
+        dados.AppLogoPSettings,
+        dados.AppLogoPPublicIdSettings,
+        dados.WebBannerSettings,
+        dados.WebBannerPublicIdSettings,
+        dados.DeliveryAreaDistance,
+        dados.UrlDeliveryMap,
+        dados.UrlGooglePlay,
+        dados.ContactPhone,
+        dados.ContactEmail,
+        dados.ContactWhatsapp,
+        dados.IdSettings
     ];
     connection.query(sql, params, function (err, rows) {
       return callback(err, rows);
     });
   };
-
 };
 
 exports.delete = function (req, res) {
