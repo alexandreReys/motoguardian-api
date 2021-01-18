@@ -17,6 +17,7 @@ router.put("/delivering/:IdOrder", deliveryOrderControler.putDeliveringOrder);
 router.put("/delivered/:IdOrder", deliveryOrderControler.putDeliveredOrder);
 router.put("/start-delivery/:IdOrder", deliveryOrderControler.putStartDelivery);
 router.put("/end-delivery/:IdOrder", deliveryOrderControler.putEndDelivery);
+router.put("/rating/:idOrder/:rating", deliveryOrderControler.updateRatingDelivery);
 router.put("/went-wrong-delivery/:IdOrder", deliveryOrderControler.wentWrongDelivery);
 
 router.post("/", deliveryOrderControler.post);

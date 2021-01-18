@@ -278,6 +278,27 @@ exports.putEndDelivery = function (req, res) {
     });
 };
 
+exports.updateRatingDelivery = function (req, res) {
+
+    updateRating((err, rows) => {
+        if (err) return handleError(err, res);
+        res.json(rows);
+    });
+
+    function updateRating(callback) {
+        let sql = `
+            UPDATE delivery_order SET EvaluationOrder = ?
+            WHERE (IdOrder = ?)`;
+
+        connection.query(
+            sql, [req.params.rating, req.params.idOrder], 
+            function (error, rows) {
+                return callback(error, rows);
+            }
+        );
+    };
+};
+
 exports.wentWrongDelivery = function (req, res) {
     const id = req.params.IdOrder;
     const status = "Deu Ruim";
@@ -424,11 +445,11 @@ const changeStatusOrder = (id, status, deliveryMan, callback) => {
         });
     } else {
         let sql = `
-      UPDATE delivery_order SET 
-        StatusOrder = ?,
-        DeliveryManOrder = ?
-      WHERE (IdOrder = ?)
-    `;
+            UPDATE delivery_order SET 
+                StatusOrder = ?,
+                DeliveryManOrder = ?
+            WHERE (IdOrder = ?)
+            `;
         connection.query(sql, [status, deliveryMan, id], function (error, rows) {
             return callback(error, rows);
         });
