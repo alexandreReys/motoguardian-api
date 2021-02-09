@@ -68,22 +68,47 @@ exports.put = function (req, res) {
 
   function update(req, callback) {
     const dados = req.body;
+
     const sql = 
     `UPDATE delivery_settings 
      SET 
-        AddressSellerSettings = ?, ShippingTaxSettings = ?, 
-        AppBannerSettings = ?, AppBannerPublicIdSettings = ?, 
-        AppLogoPSettings = ?, AppLogoPPublicIdSettings = ?, 
-        WebBannerSettings = ?, WebBannerPublicIdSettings = ?, 
-        DeliveryAreaDistance = ?, UrlDeliveryMap = ?, 
-        UrlGooglePlay = ?, ContactPhone = ?, 
-        ContactEmail = ?, ContactWhatsapp = ? 
+        AddressSellerSettings = ?, 
+        ShippingTaxSettings = ?, 
+
+        AppBannerSettings = ?, 
+        AppBannerPublicIdSettings = ?, 
+
+        AppBanner2Settings = ?, 
+        AppBanner2PublicIdSettings = ?, 
+
+        AppBanner3Settings = ?, 
+        AppBanner3PublicIdSettings = ?, 
+
+        AppLogoPSettings = ?, 
+        AppLogoPPublicIdSettings = ?, 
+        WebBannerSettings = ?, 
+        WebBannerPublicIdSettings = ?, 
+        DeliveryAreaDistance = ?, 
+        UrlDeliveryMap = ?, 
+        UrlGooglePlay = ?, 
+        ContactPhone = ?, 
+        ContactEmail = ?, 
+        ContactWhatsapp = ? 
      WHERE IdSettings = ?`;
+    
     const params = [
         dados.AddressSellerSettings,
         dados.ShippingTaxSettings,
+
         dados.AppBannerSettings,
         dados.AppBannerPublicIdSettings,
+
+        dados.AppBanner2Settings,
+        dados.AppBanner2PublicIdSettings,
+
+        dados.AppBanner3Settings,
+        dados.AppBanner3PublicIdSettings,
+
         dados.AppLogoPSettings,
         dados.AppLogoPPublicIdSettings,
         dados.WebBannerSettings,
@@ -96,6 +121,7 @@ exports.put = function (req, res) {
         dados.ContactWhatsapp,
         dados.IdSettings
     ];
+
     connection.query(sql, params, function (err, rows) {
       return callback(err, rows);
     });
