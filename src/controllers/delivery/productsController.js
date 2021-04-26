@@ -165,7 +165,7 @@ const getAll = (callback) => {
 const getActiveProducts = (callback) => {
     let sql =
         `SELECT * 
-        FROM produtosvinho p 
+        FROM ProdutosVinho p 
           LEFT JOIN product_variation v 
             ON p.IdVinho = v.IdProduct 
         WHERE (p.StatusVinho <> 0) 
