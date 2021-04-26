@@ -94,7 +94,7 @@ exports.promotionalPrice = function (req, res) {
 };
 
 exports.delete = function (req, res) {
-    deleteVinho(req, (err, rows) => {
+    productsRepository.delete(req, (err, rows) => {
         if (err) return handleError(err);
         res.json(rows);
     });
@@ -102,7 +102,7 @@ exports.delete = function (req, res) {
 
 exports.uploadProductImage = async function (req, res) {
     console.log("process.env.CLOUDINARY_UPLOAD_PRESET", process.env.CLOUDINARY_UPLOAD_PRESET);
-    
+
     try {
         const base64Image = req.body.data;
 
@@ -151,19 +151,25 @@ const handleError = (err) => {
 };
 
 const getAll = (callback) => {
-    let sql = `SELECT *
-             FROM ProdutosVinho
-             ORDER BY DescricaoVinho`;
+    let sql =
+        `SELECT *
+        FROM ProdutosVinho p
+          LEFT JOIN product_variation v 
+            ON p.IdVinho = v.IdProduct 
+        ORDER BY DescricaoVinho`;
     connection.query(sql, function (error, rows) {
         return callback(error, rows);
     });
 };
 
 const getActiveProducts = (callback) => {
-    let sql = `SELECT *
-             FROM ProdutosVinho
-             WHERE StatusVinho <> 0 
-             ORDER BY DescricaoVinho`;
+    let sql =
+        `SELECT * 
+        FROM produtosvinho p 
+          LEFT JOIN product_variation v 
+            ON p.IdVinho = v.IdProduct 
+        WHERE (p.StatusVinho <> 0) 
+        ORDER BY p.DescricaoVinho`;
     connection.query(sql, function (error, rows) {
         return callback(error, rows);
     });
@@ -171,9 +177,13 @@ const getActiveProducts = (callback) => {
 
 const getByCategory = (req, callback) => {
     const params = [req.query.Category];
-    let sql = `SELECT * FROM ProdutosVinho
-             WHERE (TipoVinho LIKE ?)
-             ORDER BY TipoVinho, DescricaoVinho`;
+    let sql =
+        `SELECT * 
+        FROM ProdutosVinho p 
+          LEFT JOIN product_variation v 
+            ON p.IdVinho = v.IdProduct 
+        WHERE (TipoVinho LIKE ?) 
+        ORDER BY TipoVinho, DescricaoVinho`;
     connection.query(sql, params, function (error, rows) {
         return callback(error, rows);
     });
@@ -181,18 +191,26 @@ const getByCategory = (req, callback) => {
 
 const getActivesByCategory = (req, callback) => {
     const params = [req.query.Category];
-    let sql = `SELECT * FROM ProdutosVinho
-             WHERE (TipoVinho LIKE ?) and (StatusVinho <> 0)
-             ORDER BY TipoVinho, DescricaoVinho`;
+    let sql =
+        `SELECT * 
+        FROM ProdutosVinho p 
+          LEFT JOIN product_variation v 
+            ON p.IdVinho = v.IdProduct 
+        WHERE (TipoVinho LIKE ?) and (StatusVinho <> 0) 
+        ORDER BY TipoVinho, DescricaoVinho`;
     connection.query(sql, params, function (error, rows) {
         return callback(error, rows);
     });
 };
 
 const getActivesInPromotion = (callback) => {
-    let sql = `SELECT * FROM ProdutosVinho
-             WHERE (EmPromocaoVinho = 1) and (StatusVinho <> 0)
-             ORDER BY DescricaoVinho`;
+    let sql =
+        `SELECT * 
+        FROM ProdutosVinho p 
+          LEFT JOIN product_variation v 
+            ON p.IdVinho = v.IdProduct 
+        WHERE (EmPromocaoVinho = 1) and (StatusVinho <> 0)
+        ORDER BY DescricaoVinho`;
     connection.query(sql, [], function (error, rows) {
         return callback(error, rows);
     });
@@ -201,10 +219,13 @@ const getActivesInPromotion = (callback) => {
 const getByName = (req, callback) => {
     const stringParam = `%${req.query.DescricaoVinho}%`;
     const params = [stringParam, stringParam];
-    let sql = `SELECT *
-             FROM ProdutosVinho
-             WHERE (DescricaoVinho LIKE ?)
-             ORDER BY DescricaoVinho`;
+    let sql =
+        `SELECT *
+        FROM ProdutosVinho p 
+          LEFT JOIN product_variation v 
+            ON p.IdVinho = v.IdProduct 
+        WHERE (DescricaoVinho LIKE ?)
+        ORDER BY DescricaoVinho`;
     connection.query(sql, params, function (error, rows) {
         return callback(error, rows);
     });
@@ -213,10 +234,13 @@ const getByName = (req, callback) => {
 const getActivesByName = (req, callback) => {
     const stringParam = `%${req.query.DescricaoVinho}%`;
     const params = [stringParam, stringParam];
-    let sql = `SELECT *
-             FROM ProdutosVinho
-             WHERE (DescricaoVinho LIKE ?) and (StatusVinho <> 0)
-             ORDER BY DescricaoVinho`;
+    let sql =
+        `SELECT * 
+        FROM ProdutosVinho p 
+          LEFT JOIN product_variation v 
+            ON p.IdVinho = v.IdProduct 
+        WHERE (DescricaoVinho LIKE ?) and (StatusVinho <> 0) 
+        ORDER BY DescricaoVinho`;
     connection.query(sql, params, function (error, rows) {
         return callback(error, rows);
     });
@@ -225,10 +249,13 @@ const getActivesByName = (req, callback) => {
 const getFiveByCategory = (req, callback) => {
     const stringParam = `%${req.query.Category}%`;
     const params = [stringParam, stringParam];
-    let sql = `SELECT *
-             FROM ProdutosVinho
-             WHERE (TipoVinho LIKE ?)
-             ORDER BY DescricaoVinho`;
+    let sql =
+        `SELECT *
+        FROM ProdutosVinho p 
+          LEFT JOIN product_variation v 
+            ON p.IdVinho = v.IdProduct 
+        WHERE (TipoVinho LIKE ?)
+        ORDER BY DescricaoVinho`;
     //   LIMIT 0,5`;
     connection.query(sql, params, function (error, rows) {
         resultArray = JSON.parse(JSON.stringify(rows));
@@ -236,43 +263,7 @@ const getFiveByCategory = (req, callback) => {
     });
 };
 
-const updateVinho = (req, callback) => {
-    const dados = req.body;
-    const sql = `UPDATE ProdutosVinho 
-     SET 
-       DescricaoVinho = ?,
-       PrecoVinho = ?,
-       TipoVinho = ?,
-       ClassificacaoVinho = ?,
-       PaisVinho = ?,
-       GarrafaVinho = ?,
-       ComentarioVinho = ?,
-       CodigoErpVinho = ?,
-       Imagem1Vinho = ?,
-       Imagem1IdVinho = ?,
-       Imagem2Vinho = ?,
-       Imagem3Vinho = ?
-    WHERE 
-      idVinho = ?`;
-    const params = [
-        dados.DescricaoVinho,
-        dados.PrecoVinho,
-        dados.TipoVinho,
-        dados.ClassificacaoVinho,
-        dados.PaisVinho,
-        dados.GarrafaVinho,
-        dados.ComentarioVinho,
-        dados.CodigoErpVinho,
-        dados.Imagem1Vinho,
-        dados.Imagem1IdVinho,
-        dados.Imagem2Vinho,
-        dados.Imagem3Vinho,
-        dados.IdVinho,
-    ];
-    connection.query(sql, params, function (err, rows) {
-        return callback(err, rows);
-    });
-};
+
 
 const deactivateProduct = (req, callback) => {
     const dados = req.body;
@@ -310,11 +301,125 @@ const setPromotionalPrice = (req, callback) => {
     });
 };
 
-const deleteVinho = (req, callback) => {
-    const { IdVinho } = req.query;
-    const sql = "DELETE FROM ProdutosVinho WHERE IdVinho = ?";
-    const params = [IdVinho];
+
+
+
+
+const updateVinho = (req, callback) => {
+    const dados = req.body;
+
+    const sql = `UPDATE ProdutosVinho 
+     SET 
+        DescricaoVinho = ?,
+        PrecoVinho = ?,
+        TipoVinho = ?,
+        ClassificacaoVinho = ?,
+        PaisVinho = ?,
+        GarrafaVinho = ?,
+        ComentarioVinho = ?,
+        CodigoErpVinho = ?,
+        Imagem1Vinho = ?,
+        Imagem1IdVinho = ?,
+        Imagem2Vinho = ?,
+        Imagem3Vinho = ?
+    WHERE 
+        idVinho = ?`;
+    
+    const params = [
+        dados.DescricaoVinho,
+        dados.PrecoVinho,
+        dados.TipoVinho,
+        dados.ClassificacaoVinho,
+        dados.PaisVinho,
+        dados.GarrafaVinho,
+        dados.ComentarioVinho,
+        dados.CodigoErpVinho,
+        dados.Imagem1Vinho,
+        dados.Imagem1IdVinho,
+        dados.Imagem2Vinho,
+        dados.Imagem3Vinho,
+        dados.IdVinho,
+    ];
+    
+    connection.query(sql, params, function (err, rows) {
+        
+        if (err) return callback(err, rows);
+
+        const params = {
+            idProduct: dados.IdVinho,
+            idProductVariation: dados.IdProductVariation,
+            quantityProductVariation: dados.QuantityProductVariation,
+            descriptionProductVariation: dados.DescriptionProductVariation,
+            priceProductVariation: dados.PriceProductVariation,
+        };
+
+        getProductVariation(params, function (err, productVariation) {
+            if ( !!productVariation ) {
+                updateProductVariation(params);
+            } else {
+                insertProductVariation(params);
+            };
+
+            return callback(err, rows);
+        });
+    });
+};
+
+const getProductVariation = (dados, callback) => {
+    const sql = "SELECT * FROM product_variation WHERE IdProduct = ?";
+
+    const params = [dados.idProduct];
+
     connection.query(sql, params, function (err, rows) {
         return callback(err, rows);
     });
 };
+
+const updateProductVariation = (dados) => {
+    const sql = `UPDATE product_variation  
+     SET 
+        IdProduct = ?,
+        QuantityProductVariation = ?,
+        DescriptionProductVariation = ?,
+        PriceProductVariation = ?
+    WHERE 
+        IdProductVariation = ?`;
+
+    const params = [
+        dados.idProduct,
+        dados.quantityProductVariation,
+        dados.descriptionProductVariation,
+        dados.priceProductVariation,
+        dados.idProductVariation,
+    ];
+
+    connection.query(sql, params, function (err, rows) {
+        return rows? true: false;
+    });
+};
+
+const insertProductVariation = (dados) => {
+    console.log("============================================  insertProductVariation");
+
+    const sql = `INSERT INTO product_variation ( 
+        IdProduct,
+        QuantityProductVariation, 
+        DescriptionProductVariation, 
+        PriceProductVariation 
+    ) 
+    VALUES ( 
+        ?, ?, ?, ? 
+    )`;
+
+    const params = [
+        dados.idProduct,
+        dados.quantityProductVariation,
+        dados.descriptionProductVariation,
+        dados.priceProductVariation,
+    ];
+
+    connection.query(sql, params, function (err, rows) {
+        return rows? true: false;
+    });
+};
+
