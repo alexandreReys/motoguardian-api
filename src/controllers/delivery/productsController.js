@@ -101,7 +101,7 @@ exports.delete = function (req, res) {
 };
 
 exports.uploadProductImage = async function (req, res) {
-    console.log("process.env.CLOUDINARY_UPLOAD_PRESET", process.env.CLOUDINARY_UPLOAD_PRESET);
+    // console.log("process.env.CLOUDINARY_UPLOAD_PRESET", process.env.CLOUDINARY_UPLOAD_PRESET);
 
     try {
         const base64Image = req.body.data;
@@ -354,7 +354,7 @@ const updateVinho = (req, callback) => {
         };
 
         getProductVariation(params, function (err, productVariation) {
-            if ( !!productVariation ) {
+            if ( productVariation.length > 0 ) {
                 updateProductVariation(params);
             } else {
                 insertProductVariation(params);
@@ -399,8 +399,6 @@ const updateProductVariation = (dados) => {
 };
 
 const insertProductVariation = (dados) => {
-    console.log("============================================  insertProductVariation");
-
     const sql = `INSERT INTO product_variation ( 
         IdProduct,
         QuantityProductVariation, 
