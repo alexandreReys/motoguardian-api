@@ -9,7 +9,7 @@ exports.upload = async function (req, res) {
         const response = await cloudinary.uploader.upload(req.body.data, uploadApiOptions);
         res.json({ url: response.url, public_id: response.public_id });
     } catch (error) {
-        console.error(error);
+        console.error('imageController/upload', error);
         res.status(500).json({ err: "Something went wrong" });
     };
 };
@@ -20,7 +20,7 @@ exports.delete = async function (req, res) {
         await cloudinary.uploader.destroy( req.query.publicId );
         res.json({ msg: "OK" });
     } catch (error) {
-        console.error(error);
+        console.error('imageController/delete', error);
         res.status(500).json({ err: "Something went wrong" });
     };
 };

@@ -1,8 +1,7 @@
 function groupBy (xs, key) {
     return xs.reduce(
         (rv, x) => ({
-            ...rv,
-            [x[key]]: [...(rv[x[key]] || []), x],
+            ...rv, [x[key]]: [...(rv[x[key]] || []), x],
         }),
         {}
     );

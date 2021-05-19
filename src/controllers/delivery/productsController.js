@@ -58,6 +58,15 @@ exports.getProductsGroupedByCategory = function (req, res) {
     });
 };
 
+exports.getProductsGroupedBySelectedAppListCategories = function (req, res) {
+    getActiveProductsWithSelectedAppListCategories((err, rows) => {
+        if (err) return handleError(err);
+        let products = JSON.parse(JSON.stringify(rows));
+        products = groupedMax5(products, "TipoVinho");
+        res.send(products);
+    });
+};
+
 exports.post = function (req, res) {
     productsRepository.insertVinho(req, (err, rows) => {
         if (err) return handleError(err);
@@ -164,11 +173,26 @@ const getAll = (callback) => {
 
 const getActiveProducts = (callback) => {
     let sql =
-        `SELECT * 
+       `SELECT * 
         FROM ProdutosVinho p 
           LEFT JOIN product_variation v 
             ON p.IdVinho = v.IdProduct 
         WHERE (p.StatusVinho <> 0) 
+        ORDER BY p.DescricaoVinho`;
+    connection.query(sql, function (error, rows) {
+        return callback(error, rows);
+    });
+};
+
+const getActiveProductsWithSelectedAppListCategories = (callback) => {
+    let sql =
+       `SELECT * 
+        FROM ProdutosVinho p 
+          LEFT JOIN product_variation v 
+            ON p.IdVinho = v.IdProduct 
+          LEFT JOIN delivery_category dc 
+            ON p.TipoVinho = dc.DescriptionCategory 
+        WHERE (p.StatusVinho <> 0) and (dc.ShowAppListCategory <> 0) 
         ORDER BY p.DescricaoVinho`;
     connection.query(sql, function (error, rows) {
         return callback(error, rows);
@@ -420,4 +444,3 @@ const insertProductVariation = (dados) => {
         return rows? true: false;
     });
 };
-
