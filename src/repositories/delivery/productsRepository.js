@@ -88,6 +88,7 @@ exports.delete = (req, callback) => {
 
         const sql = "DELETE FROM ProdutosVinho WHERE IdVinho = ?";
         const params = [IdVinho];
+        
         connection.query(sql, params, function (err, rows) {
             return callback(err, rows);
         });

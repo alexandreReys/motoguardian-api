@@ -59,6 +59,7 @@ exports.getProductsGroupedByCategory = function (req, res) {
 };
 
 exports.getProductsGroupedBySelectedAppListCategories = function (req, res) {
+    
     getActiveProductsWithSelectedAppListCategories((err, rows) => {
         if (err) return handleError(err);
         let products = JSON.parse(JSON.stringify(rows));

@@ -12,6 +12,7 @@ router.get("/name/actives", productsController.getActiveProductsByName);
 router.get("/category", productsController.getProductsByCategory);
 router.get("/category/actives", productsController.getActiveProductsByCategory);
 router.get("/category/grouped", productsController.getProductsGroupedByCategory);
+
 router.get("/category/grouped/selected", productsController.getProductsGroupedBySelectedAppListCategories);
 router.get("/promotion/actives", productsController.getActiveProductsInPromotion);
 
