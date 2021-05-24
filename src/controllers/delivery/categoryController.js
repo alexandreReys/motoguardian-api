@@ -14,6 +14,13 @@ exports.getAllNotAppList = function (req, res) {
   });
 };
 
+exports.getSelected = function (req, res) {
+  getSelected((err, rows) => {
+    if (err) return handleError(err);
+    res.json(rows);
+  });
+};
+
 exports.getByDescription = function (req, res) {
   getByDescription2(req, (err, rows) => {
     if (err) return handleError(err);
@@ -67,6 +74,16 @@ const getAllNotAppList = (callback) => {
              FROM delivery_category
              WHERE ShowAppListCategory = 0 
              ORDER BY DescriptionCategory`;
+  connection.query(sql, function (error, rows) {
+    return callback(error, rows);
+  });
+};
+
+const getSelected = (callback) => {
+  let sql = `SELECT *
+             FROM delivery_category
+             WHERE ShowAppSearchCategory <> 0 
+             ORDER BY ShowAppSearchCategory desc, DescriptionCategory`;
   connection.query(sql, function (error, rows) {
     return callback(error, rows);
   });

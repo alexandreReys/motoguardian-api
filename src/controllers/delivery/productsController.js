@@ -194,7 +194,7 @@ const getActiveProductsWithSelectedAppListCategories = (callback) => {
           LEFT JOIN delivery_category dc 
             ON p.TipoVinho = dc.DescriptionCategory 
         WHERE (p.StatusVinho <> 0) and (dc.ShowAppListCategory <> 0) 
-        ORDER BY p.DescricaoVinho`;
+        ORDER BY dc.ShowAppListCategory desc, p.DescricaoVinho`;
     connection.query(sql, function (error, rows) {
         return callback(error, rows);
     });

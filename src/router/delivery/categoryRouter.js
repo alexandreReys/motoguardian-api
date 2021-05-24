@@ -6,6 +6,7 @@ const router = Router();
 
 router.get("/", categoryController.getAll);
 router.get("/notapplist", categoryController.getAllNotAppList);
+router.get("/selected", categoryController.getSelected);
 router.get("/description", categoryController.getByDescription);
 router.post("/", Authorization, categoryController.post);
 router.put("/", Authorization, categoryController.put);
