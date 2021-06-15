@@ -318,8 +318,8 @@ const setPromotionalPrice = (req, callback) => {
     const dados = req.body;
     const sql =
         `UPDATE ProdutosVinho 
-     SET PrecoPromocionalVinho = ? 
-     WHERE IdVinho = ?`;
+        SET PrecoPromocionalVinho = ? 
+        WHERE IdVinho = ?`;
     const params = [dados.PrecoPromocionalVinho, dados.IdVinho];
     connection.query(sql, params, function (err, rows) {
         return callback(err, rows);

@@ -53,6 +53,46 @@ exports.getByStatus = function (req, res) {
     function get(req, callback) {
         const status = req.params.status;
     
+        if (status != "Saiu para entregar" && status != "Pendente") {
+            let sql =
+                `SELECT * 
+                FROM delivery_order 
+                WHERE (StatusOrder = ?)
+                ORDER BY IdOrder desc`;
+            connection.query(sql, [status], function (error, rows) {
+                return callback(error, rows);
+            });
+
+            return;
+        };
+
+        if (status == "Saiu para entregar" || status == "Pendente") {
+            let status2 = "A caminho";
+            if (status == "Pendente") status2 = "Novo";
+
+            let sql =
+                `SELECT * 
+                FROM delivery_order 
+                WHERE (StatusOrder = ?) OR (StatusOrder = ?)
+                ORDER BY IdOrder desc`;
+            connection.query(sql, [status, status2], function (error, rows) {
+                return callback(error, rows);
+            });
+
+            return;
+        };
+    };
+};
+
+exports.getByStatus2 = function (req, res) {
+    get(req, (err, rows) => {
+        if (err) return handleError(err);
+        res.json(rows);
+    });
+
+    function get(req, callback) {
+        const status = req.params.status;
+    
         if (status == "Saiu para entregar") {
             const status2 = "A caminho";
             let sql =
@@ -128,6 +168,21 @@ exports.getItems = function (req, res) {
 exports.getHistory = function (req, res) {
     getOrderHistory(req, (err, rows) => {
         if (err) return handleError(err);
+        res.json(rows);
+    });
+};
+
+exports.putAcceptOrder = function (req, res) {
+    const id = req.params.IdOrder;
+    const status = "Pendente";
+
+    changeStatusOrder(id, status, null, (err, rows) => {
+        if (err) return handleError(err);
+
+        insertDeliveryOrderHistory(id, 'Pedido Aceito', '', (err, rows) => {
+            if (err) return handleError(err, res);
+        });
+
         res.json(rows);
     });
 };
@@ -401,7 +456,7 @@ const insertDeliveryOrder = (req, dateOrder, timeOrder, callback) => {
         dados.evaluationOrder,
         dados.evaluationReasonOrder,
         dados.commentsOrder,
-        dados.statusOrder,
+        'Novo',
     ];
 
     connection.query(sql, params, function (err, rows) {

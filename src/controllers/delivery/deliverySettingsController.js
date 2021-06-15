@@ -73,7 +73,6 @@ exports.put = function (req, res) {
     `UPDATE delivery_settings 
      SET 
         AddressSellerSettings = ?, 
-        ShippingTaxSettings = ?, 
 
         AppBannerSettings = ?, 
         AppBannerPublicIdSettings = ?, 
@@ -88,37 +87,43 @@ exports.put = function (req, res) {
         AppLogoPPublicIdSettings = ?, 
         WebBannerSettings = ?, 
         WebBannerPublicIdSettings = ?, 
-        DeliveryAreaDistance = ?, 
         UrlDeliveryMap = ?, 
         UrlGooglePlay = ?, 
         ContactPhone = ?, 
         ContactEmail = ?, 
-        ContactWhatsapp = ? 
+        ContactWhatsapp = ?, 
+
+        DeliveryAreaDistance = ?, 
+        ShippingTaxSettings = ?, 
+        DeliveryAreaDistance2 = ?, 
+        ShippingTax2Settings = ? 
      WHERE IdSettings = ?`;
     
     const params = [
         dados.AddressSellerSettings,
-        dados.ShippingTaxSettings,
-
+        
         dados.AppBannerSettings,
         dados.AppBannerPublicIdSettings,
-
+        
         dados.AppBanner2Settings,
         dados.AppBanner2PublicIdSettings,
-
+        
         dados.AppBanner3Settings,
         dados.AppBanner3PublicIdSettings,
-
+        
         dados.AppLogoPSettings,
         dados.AppLogoPPublicIdSettings,
         dados.WebBannerSettings,
         dados.WebBannerPublicIdSettings,
-        dados.DeliveryAreaDistance,
         dados.UrlDeliveryMap,
         dados.UrlGooglePlay,
         dados.ContactPhone,
         dados.ContactEmail,
         dados.ContactWhatsapp,
+        dados.DeliveryAreaDistance,
+        dados.ShippingTaxSettings,
+        dados.DeliveryAreaDistance2,
+        dados.ShippingTax2Settings,
         dados.IdSettings
     ];
 
