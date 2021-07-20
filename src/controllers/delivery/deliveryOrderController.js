@@ -1,32 +1,79 @@
 require("dotenv").config();
 const axios = require("axios");
+const e = require("express");
 const connection = require("../../mysql-connection");
 const getDateNow = require("../../utils/getDateNow");
 const getTimeNow = require("../../utils/getTimeNow");
+const userException = require("../../utils");
 
-exports.getAll = function (req, res) {
-    get(req, (err, rows) => {
-        if (err) return handleError(err);
+// assync / await
+exports.getTotalsByDeliverymanAndDate = async function (req, res) {
+    try {
+        let rows = await get(req);
         res.json(rows);
-    });
+    } catch (err) {
+        handleError(err);
+    };
 
-    function get(req, callback) {
-        if (!req.params.status || req.params.status === "Todos") {
-            let sql = `SELECT * FROM delivery_order ORDER BY IdOrder desc`;
-            connection.query(sql, function (error, rows) {
-                return callback(error, rows);
+    function get(req) {
+        return new Promise( ( resolve, reject ) => {
+            connection.query( getSql(), [req.params.status], function (error, rows) {
+                if (!error) return resolve(rows);
+                reject(error);
             });
-        } else {
-            let sql = `SELECT * 
-                        FROM delivery_order 
-                        WHERE StatusOrder = ?
-                        ORDER BY IdOrder desc
-                    `;
-    
-            connection.query(sql, [req.params.status], function (error, rows) {
-                return callback(error, rows);
-            });
+        });
+
+        function getSql(){
+            let sql = `
+                SELECT 
+                    DeliveryManOrder,
+                    CURDATE() Hoje, 
+                    WEEK( CURDATE(),7 ) SemanaAtual, 
+                    WEEK( DateOrder,7 ) Semana, 
+                    SUBDATE( DateOrder, weekday( DateOrder ) ) DiaInicioSemana, 
+                    SUBDATE( DateOrder, weekday( DateOrder )-6 ) DiaFimSemana, 
+                    COUNT( ShippingAmountOrder ) AS NumEntregas, 
+                    SUM( ShippingAmountOrder ) AS TotalReceber  
+                FROM delivery_order d  
+                WHERE StatusOrder = 'Entregue' 
+                    AND DeliveryManOrder = '${req.params.deliveryman}' 
+                    AND WEEK(DateOrder) >= WEEK( CURDATE() ) - 4 
+                GROUP BY DeliveryManOrder, Semana 
+                ORDER BY DeliveryManOrder, Semana DESC;
+                `;
+            return sql;
         };
+    };
+};
+
+// assync / await
+exports.getAll = async function (req, res) {
+    try {
+        let rows = await get(req);
+        res.json(rows);
+    } catch (err) {
+        handleError(err);
+    };
+
+    function get(req) {
+        return new Promise( (resolve, reject) => {
+            if (!req.params.status || req.params.status === "Todos") {
+                let sql = `SELECT * FROM delivery_order ORDER BY IdOrder desc`;
+                connection.query(sql, function (error, rows) {
+                    if (error) return reject(error);
+                    resolve(rows);
+                });
+            } else {
+                let sql = `SELECT * 
+                           FROM delivery_order 
+                           WHERE StatusOrder = ?
+                           ORDER BY IdOrder desc`;
+                connection.query(sql, [req.params.status], function (error, rows) {
+                    if (!error) return resolve(rows);
+                    reject(error);
+                });
+            };
+        });
     };
 };
 
@@ -202,11 +249,74 @@ exports.putRejectOrder = function (req, res) {
     });
 };
 
-exports.putDeliveringOrder = function (req, res) {
+//  async / await
+exports.putDeliveringOrder = async function (req, res) {
     const id = req.params.IdOrder;
     const status = "Saiu para entregar";
 
-    changeStatusOrder(id, status, null, (err, rows) => {
+    try {
+        let rows = await changeStatusOrder1(id, status, null);
+        if (rows.affectedRows === 0)
+            throw new userException(`Pedido ${id} não encontrado !!`);
+
+        await insertDeliveryOrderHistory1(id, status, "");
+        res.json({message: 'ok'});
+    } catch (err) {
+        handleError(err, res);
+    };
+
+    function changeStatusOrder1(id, status, deliveryMan) {
+        return new Promise( (resolve, reject)=> {
+            if (!deliveryMan) {
+                let sql =  
+                   `UPDATE delivery_order SET StatusOrder = ?
+                    WHERE (IdOrder = ?)`;
+                connection.query(sql, [status, id], function (error, rows) {
+                    if (!error) return resolve(rows);
+                    return reject(error);
+                });
+            } else {
+                let sql = 
+                   `UPDATE delivery_order SET 
+                        StatusOrder = ?,
+                        DeliveryManOrder = ?
+                    WHERE (IdOrder = ?)`;
+                connection.query(sql, [status, deliveryMan, id], function (error, rows) {
+                    if (!error) return resolve(rows);
+                    return reject(error);
+                });
+            }
+        });
+    };
+
+    function insertDeliveryOrderHistory1(id, status, comments) {
+        return new Promise( (resolve, reject) => {
+            const sql = `
+                INSERT INTO delivery_orderHistory ( 
+                    IdOrder_OrderHistory,
+                    Date_OrderHistory,
+                    Time_OrderHistory,
+                    Status_OrderHistory,
+                    Comments_OrderHistory
+                ) VALUES ( 
+                    ?,?,?,?,?
+                )`;
+    
+            const params = [id, getDateNow(), getTimeNow(), status, comments];
+    
+            connection.query(sql, params, function (error, rows) {
+                if (!error) return resolve(rows);
+                reject(error);
+            });
+        });
+    };
+};
+ 
+exports.putDeliveringOrder_ant = function (req, res) {
+    const id = req.params.IdOrder;
+    const status = "Saiu para entregar";
+
+    changeStatusOrder1(id, status, null, (err, rows) => {
         if (err) return handleError(err);
 
         insertDeliveryOrderHistory(id, status, "", (err, rows) => {
@@ -215,6 +325,32 @@ exports.putDeliveringOrder = function (req, res) {
 
         res.json(rows);
     });
+
+
+    const changeStatusOrder1 = (id, status, deliveryMan) => {
+        return new Promisse((resolve, reject)=> {
+            if (!deliveryMan) {
+                let sql =  
+                   `UPDATE delivery_order SET StatusOrder = ?
+                    WHERE (IdOrder = ?)`;
+                connection.query(sql, [status, id], function (error, rows) {
+                    if (!error) return resolve(rows);
+                    reject(error);
+                });
+            } else {
+                let sql = 
+                   `UPDATE delivery_order SET 
+                        StatusOrder = ?,
+                        DeliveryManOrder = ?
+                    WHERE (IdOrder = ?)`;
+                connection.query(sql, [status, deliveryMan, id], function (error, rows) {
+                    if (!error) return resolve(rows);
+                    reject(error);
+                });
+            }
+        });
+    };
+    
 };
 
 exports.putDeliveredOrder = function (req, res) {
@@ -375,6 +511,9 @@ const handleError = (err, res) => {
     } else if (err.code == "ENOTFOUND") {
         console.log("Erro Query", err.code);
         res.status(400).send({ message: "ENOTFOUND" });
+    } else if (err.code == "EUSEREXCEPTION") {
+        console.log("Error", err.message);
+        res.status(200).send({ error: err.message });
     } else {
         throw err;
     }
@@ -491,20 +630,18 @@ const updateOrder = function (order) {
 
 const changeStatusOrder = (id, status, deliveryMan, callback) => {
     if (!deliveryMan) {
-        let sql = `
-      UPDATE delivery_order SET StatusOrder = ?
-      WHERE (IdOrder = ?)
-    `;
+        let sql =  
+           `UPDATE delivery_order SET StatusOrder = ?
+            WHERE (IdOrder = ?)`;
         connection.query(sql, [status, id], function (error, rows) {
             return callback(error, rows);
         });
     } else {
-        let sql = `
-            UPDATE delivery_order SET 
+        let sql = 
+           `UPDATE delivery_order SET 
                 StatusOrder = ?,
                 DeliveryManOrder = ?
-            WHERE (IdOrder = ?)
-            `;
+            WHERE (IdOrder = ?)`;
         connection.query(sql, [status, deliveryMan, id], function (error, rows) {
             return callback(error, rows);
         });
