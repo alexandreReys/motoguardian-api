@@ -6,6 +6,9 @@ const morgan = require("morgan");
 const Authentication = require("../middlewares/Auth");
 const Authorization = require("../middlewares/Authz");
 
+const customerAuthentication = require("../middlewares/customer-auth");
+const customeAuthorization = require("../middlewares/customer-authz");
+
 const oficinasRouter = require("./moto-help/oficinasRouter");
 const clientesRouter = require("./moto-help/clientesRouter");
 const veiculosRouter = require("./moto-help/veiculosRouter");
@@ -17,6 +20,7 @@ const deliveryPushRouter = require("./delivery/deliveryPushRouter");
 const deliverymanRouter = require("./delivery/deliverymanRouter");
 const categoryRouter = require("./delivery/categoryRouter");
 const deliverySettingsRouter = require("./delivery/deliverySettingsRouter");
+const customerRouter = require("./delivery/customerRouter");
 
 const router = Router();
 
@@ -38,6 +42,8 @@ router.get("/", (req, res) => {
 
 router.post("/auth", Authentication);
 
+router.post("/customer-authentication", customerAuthentication);
+
 router.use("/oficinas", Authorization, oficinasRouter);
 router.use("/clientes", Authorization, clientesRouter);
 router.use("/veiculos", Authorization, veiculosRouter);
@@ -49,6 +55,7 @@ router.use("/delivery-order", deliveryOrderRouter);
 router.use("/delivery-push-notification", deliveryPushRouter);
 router.use("/deliveryman", deliverymanRouter);
 router.use("/category", categoryRouter);
+router.use("/customers", customeAuthorization, customerRouter);
 
 router.use("/delivery-settings", deliverySettingsRouter);
 
