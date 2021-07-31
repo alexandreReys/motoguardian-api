@@ -1,4 +1,4 @@
-const connection = require("../../mysql-connection");
+const connection = require("../mysql-connection");
 
 exports.getAll = function (req, res) {
   getAll((err, rows) => {

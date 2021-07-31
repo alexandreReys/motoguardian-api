@@ -3,24 +3,18 @@ const { Router } = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 
-const Authentication = require("../middlewares/Auth");
-const Authorization = require("../middlewares/Authz");
+const authentication = require("../middlewares/auth");
 
 const customerAuthentication = require("../middlewares/customer-auth");
-const customeAuthorization = require("../middlewares/customer-authz");
 
-const oficinasRouter = require("./moto-help/oficinasRouter");
-const clientesRouter = require("./moto-help/clientesRouter");
-const veiculosRouter = require("./moto-help/veiculosRouter");
-
-const productsRouter = require("./delivery/productsRouter");
-const imagesRouter = require("./delivery/imagesRouter");
-const deliveryOrderRouter = require("./delivery/deliveryOrderRouter");
-const deliveryPushRouter = require("./delivery/deliveryPushRouter");
-const deliverymanRouter = require("./delivery/deliverymanRouter");
-const categoryRouter = require("./delivery/categoryRouter");
-const deliverySettingsRouter = require("./delivery/deliverySettingsRouter");
-const customerRouter = require("./delivery/customerRouter");
+const productsRouter = require("./productsRouter");
+const imagesRouter = require("./imagesRouter");
+const ordersRouter = require("./ordersRouter");
+const deliveryPushRouter = require("./deliveryPushRouter");
+const deliverymanRouter = require("./deliverymanRouter");
+const categoryRouter = require("./categoryRouter");
+const deliverySettingsRouter = require("./deliverySettingsRouter");
+const customersRouter = require("./customersRouter");
 
 const router = Router();
 
@@ -40,22 +34,18 @@ router.get("/", (req, res) => {
   }
 });
 
-router.post("/auth", Authentication);
+router.post("/auth", authentication);
 
 router.post("/customer-authentication", customerAuthentication);
-
-router.use("/oficinas", Authorization, oficinasRouter);
-router.use("/clientes", Authorization, clientesRouter);
-router.use("/veiculos", Authorization, veiculosRouter);
 
 router.use("/products", productsRouter);
 router.use("/images", imagesRouter);
 
-router.use("/delivery-order", deliveryOrderRouter);
+router.use("/delivery-order", ordersRouter);
 router.use("/delivery-push-notification", deliveryPushRouter);
 router.use("/deliveryman", deliverymanRouter);
 router.use("/category", categoryRouter);
-router.use("/customers", customeAuthorization, customerRouter);
+router.use("/customers", customersRouter);
 
 router.use("/delivery-settings", deliverySettingsRouter);
 

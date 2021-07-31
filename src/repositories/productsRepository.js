@@ -1,4 +1,4 @@
-const connection = require("../../mysql-connection");
+const connection = require("../mysql-connection");
 
 exports.insertVinho = (req, callback) => {
     const dados = req.body;

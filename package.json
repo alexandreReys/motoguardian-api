@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "engines": {
-    "node": "12.19.0"
+    "node": "12.16.3"
   },
   "scripts": {
     "build": "webpack",
@@ -26,6 +26,7 @@
     "morgan": "^1.10.0",
     "multer": "^1.4.2",
     "mysql": "^2.18.1",
+    "nodemailer": "^6.6.3",
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11"
   }

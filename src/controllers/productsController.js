@@ -1,11 +1,11 @@
 require('dotenv').config();
 
 const fs = require("fs");
-const { cloudinary } = require("../../config/cloudinary");
+const { cloudinary } = require("../config/cloudinary");
 
-const connection = require("../../mysql-connection");
-const { groupedMax5 } = require("../../utils/groupBy");
-const productsRepository = require("../../repositories/delivery/productsRepository");
+const connection = require("../mysql-connection");
+const { groupedMax5 } = require("../utils/groupBy");
+const productsRepository = require("../repositories/productsRepository");
 
 exports.getAll = function (req, res) {
     getAll((err, rows) => {

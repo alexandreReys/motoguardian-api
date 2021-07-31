@@ -1,9 +1,9 @@
 const axios = require("axios");
-const connection = require("../../mysql-connection");
-const { getPushTokens } = require("../../services/pushNotificationService");
-const { createMessages } = require("../../services/pushNotificationService");
-const { sendMessages } = require("../../services/pushNotificationService");
-const { getReceiptIds } = require("../../services/pushNotificationService");
+const connection = require("../mysql-connection");
+const { getPushTokens } = require("../services/pushNotificationService");
+const { createMessages } = require("../services/pushNotificationService");
+const { sendMessages } = require("../services/pushNotificationService");
+const { getReceiptIds } = require("../services/pushNotificationService");
 
 exports.post = function (req, res) {
   insertPushNotificationToken(req, async (err, rows) => {

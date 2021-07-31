@@ -1,6 +1,6 @@
 const { Router } = require("express");
-const categoryController = require("../../controllers/delivery/categoryController");
-const Authorization = require("../../middlewares/Authz");
+const categoryController = require("../controllers/categoryController");
+const authorization = require("../middlewares/authz");
 
 const router = Router();
 
@@ -8,8 +8,8 @@ router.get("/", categoryController.getAll);
 router.get("/notapplist", categoryController.getAllNotAppList);
 router.get("/selected", categoryController.getSelected);
 router.get("/description", categoryController.getByDescription);
-router.post("/", Authorization, categoryController.post);
-router.put("/", Authorization, categoryController.put);
-router.delete("/", Authorization, categoryController.delete);
+router.post("/", authorization, categoryController.post);
+router.put("/", authorization, categoryController.put);
+router.delete("/", authorization, categoryController.delete);
 
 module.exports = router;

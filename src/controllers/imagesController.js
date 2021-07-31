@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const { cloudinary } = require("../../config/cloudinary");
+const { cloudinary } = require("../config/cloudinary");
 
 exports.upload = async function (req, res) {
     const uploadApiOptions = { upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET };

@@ -1,6 +1,6 @@
 require("dotenv").config();
 const axios = require("axios");
-const connection = require("../../mysql-connection");
+const connection = require("../mysql-connection");
 
 exports.getAll = function (req, res) {
   get((err, rows) => {
