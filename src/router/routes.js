@@ -3,7 +3,7 @@ const { Router } = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 
-const authentication = require("../middlewares/auth");
+const authentication = require('../middlewares/auth');
 
 const customerAuthentication = require("../middlewares/customer-auth");
 
