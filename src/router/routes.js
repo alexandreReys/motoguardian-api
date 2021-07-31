@@ -3,9 +3,9 @@ const { Router } = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 
-const authentication = require('../middlewares/auth');
+const adminAuthentication = require('../middlewares/adminAuth');
 
-const customerAuthentication = require("../middlewares/customer-auth");
+const customerAuthentication = require("../middlewares/customerAuth");
 
 const productsRouter = require("./productsRouter");
 const imagesRouter = require("./imagesRouter");
@@ -34,19 +34,16 @@ router.get("/", (req, res) => {
   }
 });
 
-router.post("/auth", authentication);
-
+router.post("/auth", adminAuthentication);
 router.post("/customer-authentication", customerAuthentication);
 
 router.use("/products", productsRouter);
 router.use("/images", imagesRouter);
-
 router.use("/delivery-order", ordersRouter);
 router.use("/delivery-push-notification", deliveryPushRouter);
 router.use("/deliveryman", deliverymanRouter);
 router.use("/category", categoryRouter);
 router.use("/customers", customersRouter);
-
 router.use("/delivery-settings", deliverySettingsRouter);
 
 module.exports = router;

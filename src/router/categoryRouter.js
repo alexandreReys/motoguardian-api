@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const categoryController = require("../controllers/categoryController");
-const authorization = require('../middlewares/authz');
+const authorization = require('../middlewares/adminAuthz');
 
 const router = Router();
 

@@ -2,7 +2,7 @@ const { Router } = require("express");
 // const multer = require("multer");
 // const multerConfig = require("../../config/multer");
 const productsController = require("../controllers/productsController");
-const authorization = require('../middlewares/authz');
+const authorization = require('../middlewares/adminAuthz');
 
 const router = Router();
 
