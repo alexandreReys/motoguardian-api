@@ -205,9 +205,9 @@ exports.postLeaving = function (req, res) {
         const id = order.IdOrder;
         const status = "Saiu para entregar";
         const deliveryMan = order.DeliveryManOrder;
-        changeStatusOrder(id, status, deliveryMan, (err, rows) => {
+        ordersRepository.changeStatusOrder(id, status, deliveryMan, (err, rows) => {
             if (err) return handleError(err);
-            insertDeliveryOrderHistory(id, status, "", (err, rows) => {
+            ordersRepository.insertDeliveryOrderHistory(id, status, "", (err, rows) => {
                 if (err) return false;
             });
         });
