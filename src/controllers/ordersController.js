@@ -201,7 +201,7 @@ exports.postLeaving = function (req, res) {
     };
     res.json({ msg: "ok" });
 
-    const updateOrder = function (order) {
+    function updateOrder(order) {
         const id = order.IdOrder;
         const status = "Saiu para entregar";
         const deliveryMan = order.DeliveryManOrder;
