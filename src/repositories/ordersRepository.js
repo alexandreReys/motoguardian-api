@@ -208,7 +208,7 @@ exports.getTotalsByDeliverymanAndDate = (req) => {
     };
 };
 
-const changeStatusOrder = (id, status, deliveryMan, callback) => {
+exports.changeStatusOrder = (id, status, deliveryMan, callback) => {
     if (!deliveryMan) {
         let sql =  
            `UPDATE delivery_order SET StatusOrder = ?
@@ -228,7 +228,7 @@ const changeStatusOrder = (id, status, deliveryMan, callback) => {
     }
 };
 
-const insertDeliveryOrderHistory = (id, status, comments, callback) => {
+exports.insertDeliveryOrderHistory = (id, status, comments, callback) => {
     const sql = `
     INSERT INTO delivery_orderHistory ( 
       IdOrder_OrderHistory,
@@ -388,20 +388,3 @@ exports.updateRating = (req, callback) => {
         }
     );
 };
-
-exports.updateOrder = function (order) {
-    const id = order.IdOrder;
-    const status = "Saiu para entregar";
-    const deliveryMan = order.DeliveryManOrder;
-    changeStatusOrder(id, status, deliveryMan, (err, rows) => {
-        if (err) return handleError(err);
-        insertDeliveryOrderHistory(id, status, "", (err, rows) => {
-            if (err) return false;
-        });
-    });
-};
-
-exports: {
-    changeStatusOrder,
-    insertDeliveryOrderHistory
-}

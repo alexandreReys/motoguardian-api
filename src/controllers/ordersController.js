@@ -197,9 +197,22 @@ exports.post = function (req, res) {
 exports.postLeaving = function (req, res) {
     const orders = req.body;
     if (orders) {
-        orders.forEach((order) => ordersRepository.updateOrder(order));
+        orders.forEach((order) => updateOrder(order));
     };
     res.json({ msg: "ok" });
+
+    const updateOrder = function (order) {
+        const id = order.IdOrder;
+        const status = "Saiu para entregar";
+        const deliveryMan = order.DeliveryManOrder;
+        changeStatusOrder(id, status, deliveryMan, (err, rows) => {
+            if (err) return handleError(err);
+            insertDeliveryOrderHistory(id, status, "", (err, rows) => {
+                if (err) return false;
+            });
+        });
+    };
+    
 };
 
 exports.getCep = async (req, res) => {
