@@ -21,20 +21,23 @@ function checkAndResponseLogin(err, rows, response) {
         console.log("    " + "err.message" + ": " + err.message);
         console.log("    " + "err.sqlMessage" + ": " + err.sqlMessage);
         return;
-    }
+    };
 
-    if (rows[0]) {
-        const username = rows[0].NameCustomer;
-        let token = jwt.sign({ username }, process.env.SECRET);
-        response.json({ auth: true, token: token, username: username });
-    } else {
-        response.status(200).json({ message: "Dados invalidos !!" });
-    }
-}
+    if (!rows[0]) return response.status(200).json({ message: "Dados invalidos !!" });
+    
+    const username = rows[0].NameCustomer;
+    let token = jwt.sign({ username }, process.env.SECRET);
+
+    response.json({ 
+        auth: true, 
+        token: token, 
+        userData: rows[0],
+    });
+};
 
 const getEmailLogin = (reqUser, callback) => {
     let sql = 
-        `SELECT EmailCustomer, PasswordCustomer, NameCustomer, IdCustomer 
+        `SELECT * 
         FROM delivery_customers 
         WHERE ( EmailCustomer = '${reqUser.user}' ) 
           AND ( PasswordCustomer = '${reqUser.password}' )

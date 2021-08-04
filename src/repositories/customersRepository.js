@@ -2,7 +2,8 @@ const connection = require('../mysql-connection');
 const { sendMail } = require('../services/emailService');
 
 exports.getAll = (callback) => {
-    let sql = `SELECT *
+    let sql = `SELECT EmailCustomer, NameCustomer, 
+                      PhoneNumberCustomer, DocumentCustomer
                FROM delivery_customers
                ORDER BY nameCustomer`;
     connection.query(sql, function (error, rows) {
@@ -14,7 +15,9 @@ exports.getByName = (req, callback) => {
     const stringParam = `%${req.params.name}%`;
 
     const params = [stringParam, stringParam];
-    let sql = `SELECT *
+    let sql = `SELECT EmailCustomer, NameCustomer, 
+                      PhoneNumberCustomer, DocumentCustomer
+               FROM delivery_customers
                FROM delivery_customers
                WHERE (nameCustomer LIKE ?)
                ORDER BY nameCustomer`;
@@ -23,7 +26,6 @@ exports.getByName = (req, callback) => {
     });
 };
 
-// async / await
 exports.insert = async (req, callback) => {
     let result;
     try {
@@ -40,10 +42,19 @@ exports.insert = async (req, callback) => {
     const sql = `INSERT INTO delivery_customers ( 
                     EmailCustomer,
                     PasswordCustomer,
-                    NameCustomer
+                    NameCustomer,
+                    PhoneNumberCustomer,
+                    DocumentCustomer
                 ) 
-                VALUES ( ?,?,? )`;
-    const params = [dados.EmailCustomer, dados.PasswordCustomer, dados.NameCustomer];
+                VALUES ( ?,?,?,?,? )`;
+    
+    const params = [
+        dados.EmailCustomer, 
+        dados.PasswordCustomer, 
+        dados.NameCustomer,
+        dados.PhoneNumberCustomer,
+        dados.DocumentCustomer
+    ];
     
     connection.query(sql, params, function (err, rows) {
         return callback(err, rows);
@@ -69,12 +80,16 @@ exports.insert = async (req, callback) => {
 exports.update = (req, callback) => {
     const dados = req.body;
     const sql = `UPDATE delivery_customers 
-                  SET EmailCustomer = ?, PasswordCustomer = ?, NameCustomer = ?
+                  SET EmailCustomer = ?, PasswordCustomer = ?, NameCustomer = ?, 
+                      PhoneNumberCustomer = ?, DocumentCustomer = ? 
                   WHERE IdCustomer = ?`;
+
     const params = [
         dados.EmailCustomer,
         dados.PasswordCustomer,
         dados.NameCustomer,
+        dados.PhoneNumberCustomer,
+        dados.DocumentCustomer,
         dados.IdCustomer,
     ];
     connection.query(sql, params, function (err, rows) {
@@ -91,7 +106,6 @@ exports.delete = (req, callback) => {
     });
 };
 
-// async / await
 exports.passwordRecover = async (req, callback) => {
     let result;
     try {

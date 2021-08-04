@@ -100,6 +100,13 @@ exports.getById = (req, callback) => {
     });
 };
 
+exports.getByCustomerId = (req, callback) => {
+    let sql = "SELECT * FROM delivery_order WHERE (CustomerIdOrder = ?)";
+    connection.query(sql, [req.params.customerIdOrder], function (error, rows) {
+        return callback(error, rows);
+    });
+};
+
 exports.getByStatus = (req, callback) => {
     const status = req.params.status;
 
@@ -297,63 +304,79 @@ exports.insertDeliveryOrder = (req, dateOrder, timeOrder, callback) => {
     const dados = req.body;
 
     const sql = `INSERT INTO delivery_order ( 
-    IdCustomerOrder,
     DateOrder,
     TimeOrder,
     QuantityItemsOrder,
     TotalProductsOrder,
     ShippingAmountOrder,
+
     TotalOrder,
     ChangeValueOrder,
     PaymantTypeOrder,
+    CustomerIdOrder,
     CustomerNameOrder,
+    
     CustomerDocumentOrder,
     CustomerPhoneNumberOrder,
     CustomerAddressTypeOrder,
     CustomerAddressOrder,
     CustomerStreetOrder,
+    
     CustomerNumberOrder,
     CustomerComplementOrder,
     CustomerInfoOrder,
     CustomerNeighborhoodOrder,
     CustomerCityOrder,
+    
     CustomerStateOrder,
     CustomerPostalCodeOrder,
     DeliveryManOrder,
     EvaluationOrder,
     EvaluationReasonOrder,
+    
     CommentsOrder,
     StatusOrder
+
   ) VALUES ( 
-    ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
+    ?,?,?,?,?,
+    ?,?,?,?,?,
+    ?,?,?,?,?,
+    ?,?,?,?,?,
+    ?,?,?,?,?,
+    ?,?
   )`;
 
     const params = [
-        1, //IdCustomer,
         dateOrder,
         timeOrder,
         dados.quantityItemsOrder,
         dados.totalProductsOrder,
         dados.shippingAmountOrder,
+
         dados.totalOrder,
         dados.changeValueOrder,
         dados.paymantTypeOrder,
+        dados.customerIdOrder,
         dados.customerNameOrder,
+
         dados.customerDocumentOrder,
         dados.customerPhoneNumberOrder,
         dados.customerAddressTypeOrder,
         dados.customerAddressOrder,
         dados.customerStreetOrder,
+
         dados.customerNumberOrder,
         dados.customerComplementOrder,
         dados.customerInfoOrder,
         dados.customerNeighborhoodOrder,
         dados.customerCityOrder,
+
         dados.customerStateOrder,
         dados.customerPostalCodeOrder,
         dados.deliveryManOrder,
         dados.evaluationOrder,
         dados.evaluationReasonOrder,
+
         dados.commentsOrder,
         'Novo',
     ];

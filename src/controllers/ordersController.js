@@ -21,6 +21,13 @@ exports.getById = function (req, res) {
     });
 };
 
+exports.getByCustomerId = function (req, res) {
+    ordersRepository.getByCustomerId(req, (err, rows) => {
+        if (err) return handleError(err);
+        res.json(rows);
+    });
+};
+
 exports.getByStatus = function (req, res) {
     ordersRepository.getByStatus(req, (err, rows) => {
         if (err) return handleError(err);
