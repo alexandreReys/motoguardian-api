@@ -2,35 +2,42 @@ require("dotenv").config();
 const axios = require("axios");
 const getDateNow = require("../utils/getDateNow");
 const getTimeNow = require("../utils/getTimeNow");
-const userException = require("../utils");
 const ordersRepository = require("../repositories/ordersRepository");
+const userException = require("../utils");
 
 exports.getAll = async function (req, res) {
     try {
         let rows = await ordersRepository.getAll(req);
         res.json(rows);
     } catch (err) {
-        handleError(err);
+        handleError(err, res);
     };
 };
 
 exports.getById = function (req, res) {
     ordersRepository.getById(req, (err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
+        res.json(rows);
+    });
+};
+
+exports.getByDocument = function (req, res) {
+    ordersRepository.getByDocument(req, (err, rows) => {
+        if (err) return handleError(err, res);
         res.json(rows);
     });
 };
 
 exports.getByCustomerId = function (req, res) {
     ordersRepository.getByCustomerId(req, (err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         res.json(rows);
     });
 };
 
 exports.getByStatus = function (req, res) {
     ordersRepository.getByStatus(req, (err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         res.json(rows);
     });
 
@@ -38,21 +45,21 @@ exports.getByStatus = function (req, res) {
 
 exports.getByDeliveryManStatus = function (req, res) {
     ordersRepository.getByDeliveryManStatus(req, (err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         res.json(rows);
     });
 };
 
 exports.getItems = function (req, res) {
     ordersRepository.getItems(req, (err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         res.json(rows);
     });
 };
 
 exports.getHistory = function (req, res) {
     ordersRepository.getHistory(req, (err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         res.json(rows);
     });
 };
@@ -62,7 +69,7 @@ exports.getTotalsByDeliverymanAndDate = async function (req, res) {
         let rows = await ordersRepository.getTotalsByDeliverymanAndDate(req);
         res.json(rows);
     } catch (err) {
-        handleError(err);
+        handleError(err, res);
     };
 };
 
@@ -71,7 +78,7 @@ exports.putAcceptOrder = function (req, res) {
     const status = "Pendente";
 
     ordersRepository.changeStatusOrder(id, status, null, (err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
 
         ordersRepository.insertDeliveryOrderHistory(id, 'Pedido Aceito', '', (err, rows) => {
             if (err) return handleError(err, res);
@@ -86,7 +93,7 @@ exports.putRejectOrder = function (req, res) {
     const status = "Rejeitado";
 
     ordersRepository.changeStatusOrder(id, status, null, (err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
 
         ordersRepository.insertDeliveryOrderHistory(id, status, "", (err, rows) => {
             if (err) return handleError(err, res);
@@ -117,7 +124,7 @@ exports.putDeliveredOrder = function (req, res) {
     const status = "Entregue";
 
     ordersRepository.changeStatusOrder(id, status, null, (err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
 
         ordersRepository.insertDeliveryOrderHistory(id, status, "", (err, rows) => {
             if (err) return handleError(err, res);
@@ -132,7 +139,7 @@ exports.putStartDelivery = function (req, res) {
     const status = "A caminho";
 
     ordersRepository.changeStatusOrder(id, status, null, (err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         ordersRepository.insertDeliveryOrderHistory(id, status, "", (err, rows) => {
             if (err) return handleError(err, res);
         });
@@ -144,7 +151,7 @@ exports.putEndDelivery = function (req, res) {
     const id = req.params.IdOrder;
     const status = "Entregue";
     ordersRepository.changeStatusOrder(id, status, null, (err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         ordersRepository.insertDeliveryOrderHistory(id, status, "", (err, rows) => {
             if (err) return handleError(err, res);
         });
@@ -163,7 +170,7 @@ exports.wentWrongDelivery = function (req, res) {
     const id = req.params.IdOrder;
     const status = "Deu Ruim";
     ordersRepository.changeStatusOrder(id, status, null, (err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         ordersRepository.insertDeliveryOrderHistory(id, status, "", (err, rows) => {
             if (err) return handleError(err, res);
         });
@@ -180,15 +187,14 @@ exports.post = function (req, res) {
 
         if (req.body.orderItems) {
             req.body.orderItems.forEach(async (item) => {
-                await ordersRepository.insertItem(item, rows.insertId);
+                ordersRepository.insertItem(item, rows.insertId, (err, response) => {
+                    if (err) return handleError(err, res);
+                });
             });
-        }
+        };
 
         ordersRepository.insertDeliveryOrderHistory(
-            rows.insertId,
-            "Pedido Colocado",
-            "",
-            (err, rows) => {
+            rows.insertId, "Pedido Colocado", "", (err, response) => {
                 if (err) return handleError(err, res);
             }
         );
@@ -213,7 +219,7 @@ exports.postLeaving = function (req, res) {
         const status = "Saiu para entregar";
         const deliveryMan = order.DeliveryManOrder;
         ordersRepository.changeStatusOrder(id, status, deliveryMan, (err, rows) => {
-            if (err) return handleError(err);
+            if (err) return handleError(err, res);
             ordersRepository.insertDeliveryOrderHistory(id, status, "", (err, rows) => {
                 if (err) return false;
             });
@@ -264,19 +270,20 @@ exports.getCepAberto = async (req, res) => {
 
 ////////////////////////////////////////////////////////////////////////////////////
 
-const handleError = (err, res) => {
-    if (err.code == "ECONNRESET") {
-        console.log("Erro Query", err.code);
-        res.status(400).send({ message: "ECONNRESET" });
-    } else if (err.code == "ENOTFOUND") {
-        console.log("Erro Query", err.code);
-        res.status(400).send({ message: "ENOTFOUND" });
-    } else if (err.code == "EUSEREXCEPTION") {
-        console.log("Error", err.message);
+const handleError = (err) => {
+    if (err.code == "EUSEREXCEPTION") {
         res.status(200).send({ error: err.message });
+        
     } else {
-        throw err;
-    }
+        console.log('');
+        console.log('Error =======>', err.message, err.code);
+        console.log('');
+
+        res.status(400).send({ 
+            errorCode: err.code,
+            errorMessage: err.message, 
+        });
+    };
 };
 
 ////////////////////////////////////////////////////////////////////////////////////

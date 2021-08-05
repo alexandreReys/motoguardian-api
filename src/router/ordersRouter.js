@@ -4,6 +4,7 @@ const router = Router();
 
 router.get("/", ordersControler.getAll);
 router.get("/id/:idOrder", ordersControler.getById);
+router.get("/document/:document", ordersControler.getByDocument);
 router.get("/customer/:customerIdOrder", ordersControler.getByCustomerId);
 router.get("/status/:status", ordersControler.getByStatus);
 

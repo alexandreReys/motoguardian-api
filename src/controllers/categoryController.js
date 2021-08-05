@@ -1,36 +1,37 @@
 const connection = require("../mysql-connection");
+const { handleError } = require('./../services/errorService');
 
 exports.getAll = function (req, res) {
     getAll((err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         res.json(rows);
     });
 };
 
 exports.getAllNotAppList = function (req, res) {
     getAllNotAppList((err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         res.json(rows);
     });
 };
 
 exports.getSelected = function (req, res) {
     getSelected((err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         res.json(rows);
     });
 };
 
 exports.getByDescription = function (req, res) {
     getByDescription2(req, (err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         res.json(rows);
     });
 };
 
 exports.post = function (req, res) {
     insert(req, (err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         res.json(rows);
     });
 };
@@ -38,7 +39,7 @@ exports.post = function (req, res) {
 exports.put = function (req, res) {
     updateCategoryProduct(req, () => {
         updateCategory(req, (err, rows) => {
-            if (err) return handleError(err);
+            if (err) return handleError(err, res);
             res.json(rows);
         });
     });
@@ -74,21 +75,12 @@ exports.put = function (req, res) {
 
 exports.delete = function (req, res) {
     delete2(req, (err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         res.json(rows);
     });
 };
 
 ////////////////////////////////////////////////////////////////////////////////////
-
-const handleError = (err) => {
-    if (err.code == "ECONNRESET") {
-        console.log("Erro Query", err.code);
-        res.status(400).send({ message: "ECONNRESET" });
-    } else {
-        throw err;
-    }
-};
 
 const getAll = (callback) => {
     let sql = `SELECT *

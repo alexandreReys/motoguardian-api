@@ -6,52 +6,53 @@ const { cloudinary } = require("../config/cloudinary");
 const connection = require("../mysql-connection");
 const { groupedMax5 } = require("../utils/groupBy");
 const productsRepository = require("../repositories/productsRepository");
+const { handleError } = require('./../services/errorService');
 
 exports.getAll = function (req, res) {
     getAll((err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         res.json(rows);
     });
 };
 
 exports.getProductsByName = function (req, res) {
     getByName(req, (err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         res.json(rows);
     });
 };
 
 exports.getActiveProductsByName = function (req, res) {
     getActivesByName(req, (err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         res.json(rows);
     });
 };
 
 exports.getProductsByCategory = function (req, res) {
     getByCategory(req, (err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         res.json(rows);
     });
 };
 
 exports.getActiveProductsByCategory = function (req, res) {
     getActivesByCategory(req, (err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         res.json(rows);
     });
 };
 
 exports.getActiveProductsInPromotion = function (req, res) {
     getActivesInPromotion((err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         res.json(rows);
     });
 };
 
 exports.getProductsGroupedByCategory = function (req, res) {
     getActiveProducts((err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         let products = JSON.parse(JSON.stringify(rows));
         products = groupedMax5(products, "TipoVinho");
         res.send(products);
@@ -61,7 +62,7 @@ exports.getProductsGroupedByCategory = function (req, res) {
 exports.getProductsGroupedBySelectedAppListCategories = function (req, res) {
     
     getActiveProductsWithSelectedAppListCategories((err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         let products = JSON.parse(JSON.stringify(rows));
         products = groupedMax5(products, "TipoVinho");
         res.send(products);
@@ -70,42 +71,42 @@ exports.getProductsGroupedBySelectedAppListCategories = function (req, res) {
 
 exports.post = function (req, res) {
     productsRepository.insertVinho(req, (err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         res.json(rows);
     });
 };
 
 exports.put = function (req, res) {
     updateVinho(req, (err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         res.json(rows);
     });
 };
 
 exports.deactivate = function (req, res) {
     deactivateProduct(req, (err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         res.json(rows);
     });
 };
 
 exports.promotion = function (req, res) {
     promotionProduct(req, (err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         res.json(rows);
     });
 };
 
 exports.promotionalPrice = function (req, res) {
     setPromotionalPrice(req, (err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         res.json(rows);
     });
 };
 
 exports.delete = function (req, res) {
     productsRepository.delete(req, (err, rows) => {
-        if (err) return handleError(err);
+        if (err) return handleError(err, res);
         res.json(rows);
     });
 };
@@ -150,15 +151,6 @@ exports.deleteProductImage = async function (req, res) {
 };
 
 ////////////////////////////////////////////////////////////////////////////////////
-
-const handleError = (err) => {
-    if (err.code == "ECONNRESET") {
-        console.log("Erro Query", err.code);
-        res.status(400).send({ message: "ECONNRESET" });
-    } else {
-        throw err;
-    }
-};
 
 const getAll = (callback) => {
     let sql =

@@ -1,10 +1,11 @@
 require("dotenv").config();
 const axios = require("axios");
 const connection = require("../mysql-connection");
+const { handleError } = require('./../services/errorService');
 
 exports.getAll = function (req, res) {
   get((err, rows) => {
-    if (err) return handleError(err);
+    if (err) return handleError(err, res);
     res.json(rows);
   });
 
@@ -20,7 +21,7 @@ exports.getAll = function (req, res) {
 
 exports.post = function (req, res) {
   insert(req, (err, rows) => {
-    if (err) return handleError(err);
+    if (err) return handleError(err, res);
     res.json(rows);
   });
 
@@ -62,7 +63,7 @@ exports.post = function (req, res) {
 
 exports.put = function (req, res) {
   update(req, (err, rows) => {
-    if (err) return handleError(err);
+    if (err) return handleError(err, res);
     res.json(rows);
   });
 
@@ -135,7 +136,7 @@ exports.put = function (req, res) {
 
 exports.delete = function (req, res) {
   dbDelete(req, (err, rows) => {
-    if (err) return handleError(err);
+    if (err) return handleError(err, res);
     res.json(rows);
   });
 
@@ -151,7 +152,7 @@ exports.delete = function (req, res) {
 
 exports.getDistance = function (req, res) {
   get_distance(req, (err, rows) => {
-    if (err) return handleError(err);
+    if (err) return handleError(err, res);
     res.json(rows);
   });
 
@@ -190,12 +191,3 @@ exports.getDistance = function (req, res) {
 };
 //https://maps.googleapis.com/maps/api/distancematrix/json?origins=Rua%20Giovanni%20da%20Conegliano,%20130%20-%20Vila%20Liviero,%20S%C3%A3o%20Paulo%20-%20SP,%2004186-020&destinations=Rua%20Giovanni%20da%20Conegliano,%201130%20-%20Vila%20Liviero,%20S%C3%A3o%20Paulo%20-%20SP,%2004186-020&key=AIzaSyB5IWWfcdld42TCGEV9FogbKZnLJf4s1xU
 ////////////////////////////////////////////////////////////////////////////////////
-
-const handleError = (err) => {
-  if (err.code == "ECONNRESET") {
-    console.log("Erro Query", err.code);
-    res.status(400).send({ message: "ECONNRESET" });
-  } else {
-    throw err;
-  }
-};

@@ -100,6 +100,13 @@ exports.getById = (req, callback) => {
     });
 };
 
+exports.getByDocument = (req, callback) => {
+    let sql = "SELECT * FROM delivery_order WHERE (CustomerDocumentOrder = ?)";
+    connection.query(sql, [req.params.document], function (error, rows) {
+        return callback(error, rows);
+    });
+};
+
 exports.getByCustomerId = (req, callback) => {
     let sql = "SELECT * FROM delivery_order WHERE (CustomerIdOrder = ?)";
     connection.query(sql, [req.params.customerIdOrder], function (error, rows) {
@@ -386,16 +393,15 @@ exports.insertDeliveryOrder = (req, dateOrder, timeOrder, callback) => {
     });
 };
 
-exports.insertItem = async (item, orderId) => {
+exports.insertItem = async (item, orderId, callback) => {
     const sql = `INSERT INTO delivery_orderItem (
-    IdOrderItem, idProductOrderItem, quantityOrderItem, priceOrderItem
-  ) VALUES ( ?,?,?,? )`;
+        IdOrderItem, idProductOrderItem, quantityOrderItem, priceOrderItem
+    ) VALUES ( ?,?,?,? )`;
 
     const params = [orderId, item.id, item.quantity, item.price];
 
     connection.query(sql, params, function (err, rows) {
-        if (err) return handleError(err);
-        return;
+        return callback(err, rows);
     });
 };
 
