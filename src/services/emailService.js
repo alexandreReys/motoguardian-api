@@ -3,7 +3,7 @@ const { createTransport } = require('nodemailer');
 function sendMail(data) {
     const user = 'anr.scs.495@gmail.com';
     const pass = 'q1@w2e3.r4';
-    const from = '"Delivery 👻" <anr.scs.495@gmail.com>';
+    const from = '"✉ Delivery" <anr.scs.495@gmail.com>';
     
     const to = data.email; //'anr.alexandre@gmail.com, alexandre@anrsistemas.com.br';
     const subject = 'Solicitação de reenvio de senha delivery app';

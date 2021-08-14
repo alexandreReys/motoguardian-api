@@ -17,7 +17,9 @@ exports.getAll = async function (req, res) {
 exports.getById = function (req, res) {
     ordersRepository.getById(req, (err, rows) => {
         if (err) return handleError(err, res);
-        res.json(rows);
+        let custormerAddress = rows[0].CustomerAddressOrder.replace(/,  /g, '');
+        let newRows = [{ ...rows[0], CustomerAddressOrder: custormerAddress }];
+        res.json(newRows);
     });
 };
 
@@ -101,6 +103,23 @@ exports.putRejectOrder = function (req, res) {
 
         res.json(rows);
     });
+};
+
+exports.putCancel = async function (req, res) {
+    const id = req.params.IdOrder;
+    const comment = req.params.comment;
+    const status = "Cancelado";
+
+    try {
+        let rows = await ordersRepository.changeStatusOrderPromise(id, status, null);
+        if (rows.affectedRows === 0)
+            throw new userException(`Pedido ${id} não encontrado !!`);
+
+        await ordersRepository.insertDeliveryOrderHistoryPromise(id, status, comment);
+        res.json({message: 'ok'});
+    } catch (err) {
+        handleError(err, res);
+    };
 };
 
 exports.putDeliveringOrder = async function (req, res) {

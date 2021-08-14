@@ -101,14 +101,14 @@ exports.getById = (req, callback) => {
 };
 
 exports.getByDocument = (req, callback) => {
-    let sql = "SELECT * FROM delivery_order WHERE (CustomerDocumentOrder = ?)";
+    let sql = "SELECT * FROM delivery_order WHERE (CustomerDocumentOrder = ?) ORDER BY IdOrder DESC";
     connection.query(sql, [req.params.document], function (error, rows) {
         return callback(error, rows);
     });
 };
 
 exports.getByCustomerId = (req, callback) => {
-    let sql = "SELECT * FROM delivery_order WHERE (CustomerIdOrder = ?)";
+    let sql = "SELECT * FROM delivery_order WHERE (CustomerIdOrder = ?) ORDER BY IdOrder DESC";
     connection.query(sql, [req.params.customerIdOrder], function (error, rows) {
         return callback(error, rows);
     });

@@ -14,6 +14,7 @@ router.get("/postal-code/:postalCode", ordersControler.getCep);
 
 router.put("/accept/:IdOrder", ordersControler.putAcceptOrder);
 router.put("/reject/:IdOrder", ordersControler.putRejectOrder);
+router.put("/cancel/:IdOrder/:comment", ordersControler.putCancel);
 router.put("/delivering/:IdOrder", ordersControler.putDeliveringOrder);
 router.put("/delivered/:IdOrder", ordersControler.putDeliveredOrder);
 router.put("/start-delivery/:IdOrder", ordersControler.putStartDelivery);
