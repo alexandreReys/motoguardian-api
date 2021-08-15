@@ -203,13 +203,22 @@ exports.post = function (req, res) {
 
     ordersRepository.insertDeliveryOrder(req, dateOrder, timeOrder, async (err, rows) => {
         if (err) return handleError(err, res);
+        
+        const orderItems = req.body.orderItems;
 
-        if (req.body.orderItems) {
-            req.body.orderItems.forEach(async (item) => {
-                ordersRepository.insertItem(item, rows.insertId, (err, response) => {
-                    if (err) return handleError(err, res);
-                });
-            });
+        if (orderItems) {
+            for (i = 0; i < orderItems.length; i++) {
+                const item = orderItems[i];
+                let resp;
+
+                try {
+                    resp = await ordersRepository.insertItem(item, rows.insertId);
+                 } catch (err) {
+                     return handleError(err, res);
+                 };
+
+                await delay(200);
+            };
         };
 
         ordersRepository.insertDeliveryOrderHistory(
@@ -223,7 +232,9 @@ exports.post = function (req, res) {
             dateOrder,
             timeOrder,
         });
-    }); ''
+    });
+
+    const delay = ms => new Promise(res => setTimeout(res, ms));
 };
 
 exports.postLeaving = function (req, res) {

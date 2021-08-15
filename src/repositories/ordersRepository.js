@@ -393,15 +393,20 @@ exports.insertDeliveryOrder = (req, dateOrder, timeOrder, callback) => {
     });
 };
 
-exports.insertItem = async (item, orderId, callback) => {
-    const sql = `INSERT INTO delivery_orderItem (
-        IdOrderItem, idProductOrderItem, quantityOrderItem, priceOrderItem
-    ) VALUES ( ?,?,?,? )`;
+exports.insertItem = async (item, orderId) => {
+    return new Promise( ( resolve, reject ) => {
 
-    const params = [orderId, item.id, item.quantity, item.price];
+            const sql = 
+                `INSERT INTO delivery_orderItem (
+                    IdOrderItem, idProductOrderItem, quantityOrderItem, priceOrderItem
+                ) VALUES ( ?,?,?,? )`;
 
-    connection.query(sql, params, function (err, rows) {
-        return callback(err, rows);
+            const params = [orderId, item.id, item.quantity, item.price];
+
+            connection.query(sql, params, function (err, rows) {
+                if (!err) return resolve(rows);
+                reject(err);
+            });
     });
 };
 
