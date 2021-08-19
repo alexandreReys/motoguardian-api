@@ -48,7 +48,15 @@ exports.getByStatus = function (req, res) {
 exports.getByDeliveryManStatus = function (req, res) {
     ordersRepository.getByDeliveryManStatus(req, (err, rows) => {
         if (err) return handleError(err, res);
-        res.json(rows);
+
+        const orders = rows.map( (row) => {
+            return {
+                ...row,
+                CustomerAddressOrder: row.CustomerAddressOrder.replace(/,  /g, ''),
+            };
+        });
+
+        res.json(orders);
     });
 };
 
