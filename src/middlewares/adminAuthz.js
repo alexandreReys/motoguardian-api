@@ -24,6 +24,12 @@ module.exports = function (request, response, next) {
 
     // se tudo estiver ok, salva no request para uso posterior
     request.username = decoded.username;
+    request.host = decoded.host;
+    request.port = decoded.port;
+    request.db = decoded.db;
+    request.user = decoded.user;
+    request.pwd = decoded.pwd;
+    
     next();
   });
 };

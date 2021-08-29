@@ -25,7 +25,14 @@ function checkAndResponseLogin(err, rows, response) {
 
     if (rows[0]) {
         const username = rows[0].name;
-        let token = jwt.sign({ username }, process.env.SECRET);
+
+        const host = rows[0].hostEmpresa;
+        const port = rows[0].portEmpresa;
+        const db   = rows[0].databaseEmpresa;
+        const user = rows[0].userEmpresa;
+        const pwd  = rows[0].passwordEmpresa;
+
+        let token = jwt.sign({ username, host, port, db, user, pwd }, process.env.SECRET);
         response.json({ auth: true, token: token, username: username });
     } else {
         response.status(200).json({ message: "Dados invalidos !" });
@@ -33,7 +40,7 @@ function checkAndResponseLogin(err, rows, response) {
 }
 
 const getEmailLogin = (reqUser, callback) => {
-    let sql = `SELECT email, name, idEmpresaUsuario, razaoSocialEmpresa
+    let sql = `SELECT * 
              FROM UsuariosNet 
              INNER JOIN EmpresasNet 
                ON idEmpresaUsuario = idEmpresa 

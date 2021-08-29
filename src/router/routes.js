@@ -13,7 +13,7 @@ const ordersRouter = require("./ordersRouter");
 const deliveryPushRouter = require("./deliveryPushRouter");
 const deliverymanRouter = require("./deliverymanRouter");
 const categoryRouter = require("./categoryRouter");
-const deliverySettingsRouter = require("./deliverySettingsRouter");
+const settingsRouter = require("./settingsRouter");
 const customersRouter = require("./customersRouter");
 
 const router = Router();
@@ -44,6 +44,6 @@ router.use("/delivery-push-notification", deliveryPushRouter);
 router.use("/deliveryman", deliverymanRouter);
 router.use("/category", categoryRouter);
 router.use("/customers", customersRouter);
-router.use("/delivery-settings", deliverySettingsRouter);
+router.use("/delivery-settings", settingsRouter);
 
 module.exports = router;
