@@ -1,7 +1,8 @@
+require("dotenv").config();
 let { Expo } = require("expo-server-sdk");
 // let db = require("app/db");
 
-let expo = new Expo();
+let expo = new Expo({ accessToken: process.env.EXPO_ACCESS_TOKEN });
 
 function getPushTokens(rows) {
     let tokens = [];
@@ -40,8 +41,6 @@ async function sendMessages(messages) {
 function getReceiptIds(tickets) {
     let receiptIds = [];
     for (let ticket of tickets) {
-        // NOTE: Not all tickets have IDs; for example, tickets for notifications
-        // that could not be enqueued will have error information and no receipt ID.
         if (ticket.id) {
             receiptIds.push(ticket.id);
         }

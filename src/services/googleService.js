@@ -15,5 +15,3 @@ exports.getGoogleDistanceMatrix = async (sellerAddress, customerAddress) => {
     };
     return response.data;
 };
-
-//https://maps.googleapis.com/maps/api/distancematrix/json?origins=Rua%20Giovanni%20da%20Conegliano,%20130%20-%20Vila%20Liviero,%20S%C3%A3o%20Paulo%20-%20SP,%2004186-020&destinations=Rua%20Giovanni%20da%20Conegliano,%201130%20-%20Vila%20Liviero,%20S%C3%A3o%20Paulo%20-%20SP,%2004186-020&key=AIzaSyB5IWWfcdld42TCGEV9FogbKZnLJf4s1xU

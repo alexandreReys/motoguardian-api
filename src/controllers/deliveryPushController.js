@@ -18,24 +18,11 @@ exports.send = async function (req, res) {
 
     let tokens = getPushTokens(rows);
 
-    // console.log("----------------  rows");
-    // console.log(rows);
-
-    // console.log("----------------  req.body.title");
-    // console.log(req.body.title);
-    
-    // console.log("----------------  req.body.body");
-    // console.log(req.body.body);
-
-    // console.log("----------------  tokens");
-    // console.log(tokens);
-
-
     let messages = createMessages(req.body.title, req.body.body, tokens);
     let tickets = await sendMessages(messages);
     let receiptIds = getReceiptIds(tickets);
 
-    res.json({ status: "OK" });
+    res.json(tickets);
   });
 };
 
@@ -79,7 +66,15 @@ const getTokensFromDB = (req, callback) => {
 //     message: '"EmulatorPushToken[0000000000000000000000]" is not a registered push notification recipient',
 //     details: { error: 'DeviceNotRegistered' }
 //   },
-//   { id: '40de9f68-2288-4c98-9f3f-b291c664c47e', status: 'ok' }
+//   {
+//       id: '6231f241-6548-4b3e-bd24-1a8104007130',
+//       status: 'error',
+//       message: "Unable to retrieve the FCM server key for the recipient's app. Make sure you have provided a server key as directed by the Expo FCM documentation.",
+//       details: { error: 'InvalidCredentials', fault: 'developer' }
+//   },
+//   {   id: '40de9f68-2288-4c98-9f3f-b291c664c47e', 
+//       status: 'ok' 
+//   }
 // ]
 // ============================= receiptIds
 // [ '40de9f68-2288-4c98-9f3f-b291c664c47e' ]
