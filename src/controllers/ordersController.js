@@ -17,6 +17,9 @@ exports.getAll = async function (req, res) {
 exports.getById = function (req, res) {
     ordersRepository.getById(req, (err, rows) => {
         if (err) return handleError(err, res);
+
+        if (rows.length === 0) return res.json(rows);
+        
         let custormerAddress = rows[0].CustomerAddressOrder.replace(/,  /g, '');
         let newRows = [{ ...rows[0], CustomerAddressOrder: custormerAddress }];
         res.json(newRows);
