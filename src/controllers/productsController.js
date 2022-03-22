@@ -59,14 +59,32 @@ exports.getProductsGroupedByCategory = function (req, res) {
     });
 };
 
-exports.getProductsGroupedBySelectedAppListCategories = function (req, res) {
-    
+exports.getProductsGroupedBySelectedAppListCategories2 = function (req, res) {
     getActiveProductsWithSelectedAppListCategories((err, rows) => {
         if (err) return handleError(err, res);
         let products = JSON.parse(JSON.stringify(rows));
         products = groupedMax5(products, "TipoVinho");
         res.send(products);
     });
+};
+
+exports.getProductsGroupedBySelectedAppListCategories = function (req, res) {
+    
+    getActiveProductsWithSelectedAppListCategories((err, rows) => {
+        if (err) return handleError(err, res);
+        let products = JSON.parse(JSON.stringify(rows));
+        var groupedData = {};
+
+        for (var it = 0; it < products.length; it++) {
+        var item = products[it];
+        if (!groupedData[item.TipoVinho])
+            groupedData[item.TipoVinho] = [];
+            if ( groupedData[item.TipoVinho].length < 5 )
+                groupedData[item.TipoVinho].push(item);
+        };
+        res.send(groupedData);
+    });
+
 };
 
 exports.post = function (req, res) {
@@ -151,6 +169,8 @@ exports.deleteProductImage = async function (req, res) {
 };
 
 ////////////////////////////////////////////////////////////////////////////////////
+
+
 
 const getAll = (callback) => {
     let sql =
